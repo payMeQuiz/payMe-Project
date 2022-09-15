@@ -4,9 +4,9 @@ import "@nomiclabs/hardhat-ethers"
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-etherscan";
-require("@nomiclabs/hardhat-waffle");
-require("@nomicfoundation/hardhat-chai-matchers");
-require('@openzeppelin/hardhat-upgrades');
+import "@nomiclabs/hardhat-waffle";
+import "@nomicfoundation/hardhat-chai-matchers";
+import '@openzeppelin/hardhat-upgrades';
 // require("hardhat-interact");
 
 

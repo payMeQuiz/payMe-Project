@@ -24,7 +24,7 @@ const deployToken: DeployFunction = async(hre: HardhatRuntimeEnvironment ) => {
    const {deploy, log, get} = deployments
 
    const token = await get(TOKEN_CONTRACT_NAME) 
-   const token_vesting = await get(TOKEN_VESTING_CONTRACT_NAME)
+   //const token_vesting = await get(TOKEN_VESTING_CONTRACT_NAME)
 
  
    log("Deploying Crowdsale Contract!")

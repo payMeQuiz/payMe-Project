@@ -35,7 +35,6 @@ contract MockCrowdsale is PaymeTokenCrowdsale{
         _openingTime,
         _closingTime,
         _TGETime,
-        _cliff,
         _duration
       ){
     }

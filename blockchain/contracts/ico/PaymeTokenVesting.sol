@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 
 /**
  * @title PaymeTokenVesting
  */
-contract PaymeTokenVesting is Ownable, ReentrancyGuard{
-    using SafeMath for uint256;
-    using SafeERC20 for IERC20;
+contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
+    using SafeMathUpgradeable for uint256;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
     struct VestingSchedule{
         bool initialized;
         // beneficiary of tokens after they are released
@@ -42,7 +43,7 @@ contract PaymeTokenVesting is Ownable, ReentrancyGuard{
     }
 
     // address of the ERC20 token
-    IERC20 immutable private _token;
+    IERC20Upgradeable private _token;
     uint256 public TGEPercent ;
     uint256 public TGEOpeningTime;
 
@@ -80,15 +81,25 @@ contract PaymeTokenVesting is Ownable, ReentrancyGuard{
      * @dev Creates a vesting contract.
      * @param token_ address of the ERC20 token contract
      */
-   constructor(IERC20 token_,uint256 TGEPercent_,uint256 TGEOpeningTime_)  {     
-        require(address(token_) != address(0));
+//    constructor(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_)  {     
+//         require(address(token_) != address(0));
+        
+//         _token = token_;
+
+//         TGEOpeningTime = TGEOpeningTime_;
+//         TGEPercent = TGEPercent_;
+
+//     }
+
+    function initialize(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_) public initializer {
+          require(address(token_) != address(0));
         
         _token = token_;
 
         TGEOpeningTime = TGEOpeningTime_;
         TGEPercent = TGEPercent_;
-
     }
+
 
     // receive() external payable {}
 
@@ -397,6 +408,7 @@ contract PaymeTokenVesting is Ownable, ReentrancyGuard{
         } else if (currentTime >= vestingSchedule.start.add(vestingSchedule.duration)) {
             return vestingSchedule.amountTotal.sub(vestingSchedule.released);
         } else {
+            //vested amount = amount * ( current time - start time )/ duration
             uint256 timeFromStart = currentTime.sub(vestingSchedule.start);
             uint secondsPerSlice = vestingSchedule.slicePeriodSeconds;
             uint256 vestedSlicePeriods = timeFromStart.div(secondsPerSlice);

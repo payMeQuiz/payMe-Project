@@ -11,13 +11,12 @@ import "@dtobi59/crowdsale/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "@dtobi59/crowdsale/contracts/crowdsale/validation/PausableCrowdsale.sol";
 import "@dtobi59/crowdsale/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
 
-
 import "../ico/PaymeTokenVesting.sol";
 
 error InsufficientBalance(uint256 balance, uint256 expected);
 error IndividuallyMinimumCappedCrowdsale(uint256);
 error IndividuallyMaximumCappedCrowdsale(uint256);
-error NotAllowed();
+error NotAllowed(address);
 
 
 contract PaymeTokenCrowdsale is Ownable, 
@@ -79,7 +78,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
         uint256 _openingTime,
         uint256 _closingTime,
         uint256 _TGETime,
-        uint256 _cliff,
         uint256 _duration
         
     )
@@ -105,7 +103,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
         // calculate token amount to be created
         uint256 tokens = _getTokenAmount(weiAmount);
 
-        BUSDT.safeTransferFrom(msg.sender, address(this), weiAmount);
+        BUSDT.safeTransferFrom(msg.sender, wallet(), weiAmount);
 
         // update state
         //_weiRaised = _weiRaised.add(weiAmount);
@@ -120,12 +118,13 @@ FinalizableCrowdsale, PausableCrowdsale  {
     }
 
     function buyTokens(address beneficiary) override  public nonReentrant payable {
-        revert NotAllowed();
+        revert NotAllowed(beneficiary);
     }
 
     function _forwardFunds(uint256 amount) internal {
-        BUSDT.transfer(wallet(), amount);
+        //BUSDT.transfer(wallet(), amount);
         //_wallet.transfer(msg.value);
+        //Funds are automatically sent to the wallet
     }
 
     
@@ -216,29 +215,29 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
         //Send raised Payme Token to vesting contract
          
-         paymeToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
+        paymeToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
          
-        PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
+        // PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
 
-        //Create Vesting shedule for all investor
-        for(uint i = 0; i < investors.length; i++){
-            Investor memory _investor = investors[i];
+        // //Create Vesting shedule for all investor
+        // for(uint i = 0; i < investors.length; i++){
+        //     Investor memory _investor = investors[i];
             
-            if(_investor.isVested == false){
-              vesting.createVestingSchedule(
-                _investor.investor,
-                TGETime,
-                cliff,
-                duration,
-                1,
-                false,
-                _investor.investment,
-                true
-             );
+        //     if(_investor.isVested == false){
+        //       vesting.createVestingSchedule(
+        //         _investor.investor,
+        //         TGETime,
+        //         cliff,
+        //         duration,
+        //         1,
+        //         false,
+        //         _investor.investment,
+        //         true
+        //      );
 
-            }
+        //     }
   
-        }
+        // }
 
 
         super._finalization();

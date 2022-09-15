@@ -76,11 +76,17 @@ describe('Crowdsales ', function(){
       deployedBUSDToken = await BUSDToken.deploy();
       await deployedBUSDToken.deployed();
 
-      vesting = await tokenVesting.deploy(
-        testToken.address,
-        TGEPERCENTAGE,
-        TGETIME
-        );
+      // vesting = await tokenVesting.deploy(
+      //   testToken.address,
+      //   TGEPERCENTAGE,
+      //   TGETIME
+      //   );
+
+        vesting = await upgrades.deployProxy(
+          tokenVesting,
+          [testToken.address, TGEPERCENTAGE,TGETIME],
+          {initializer: "initialize"});
+
       await vesting.deployed();
 
       //console.log(...crowdsaleArgs)
@@ -97,7 +103,6 @@ describe('Crowdsales ', function(){
         openingTime,
         closingTime,
         TGETIME,
-        CLIFF,
         DURATION
       );
       await crowdsale.deployed();

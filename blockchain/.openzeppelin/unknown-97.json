@@ -1,0 +1,267 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x72fa1dC1c9850F72268a9265660dd8e5346066bf",
+    "txHash": "0xa19df06eaa4b84298336628aaa63730754cbcc83d9b75a49b36b5d35b591ccb5"
+  },
+  "proxies": [
+    {
+      "address": "0xbEF65b5f31a7021A8170e5c6C7cE3dF363F56d09",
+      "txHash": "0xc006b6368531be02bf9a4d47e55a520cf81f88d3852dfa1ee115d68a500e004f",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "8fcd06720b929eb1920e82f4842dfd2da959119df314e7fafc2928f89909f397": {
+      "address": "0x76c005009D8190c0d0CBF6C272a2784B85D22141",
+      "txHash": "0x24427b891f12f87e751363959e0589daaafa530e067a780497e5fb8984782c0b",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "_status",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_uint256",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:38"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "ReentrancyGuardUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol:74"
+          },
+          {
+            "label": "_token",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_contract(IERC20Upgradeable)1152",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:46"
+          },
+          {
+            "label": "TGEPercent",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_uint256",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:47"
+          },
+          {
+            "label": "TGEOpeningTime",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_uint256",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:48"
+          },
+          {
+            "label": "vestingSchedulesIds",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_array(t_bytes32)dyn_storage",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:53"
+          },
+          {
+            "label": "vestingSchedules",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_mapping(t_bytes32,t_struct(VestingSchedule)5855_storage)",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:54"
+          },
+          {
+            "label": "vestingSchedulesTotalAmount",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_uint256",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:55"
+          },
+          {
+            "label": "holdersVestingCount",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:56"
+          },
+          {
+            "label": "TGETokenParticipates",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_mapping(t_bytes32,t_uint256)",
+            "contract": "PaymeTokenVesting",
+            "src": "contracts/ico/PaymeTokenVesting.sol:57"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IERC20Upgradeable)1152": {
+            "label": "contract IERC20Upgradeable",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(VestingSchedule)5855_storage)": {
+            "label": "mapping(bytes32 => struct PaymeTokenVesting.VestingSchedule)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(VestingSchedule)5855_storage": {
+            "label": "struct PaymeTokenVesting.VestingSchedule",
+            "members": [
+              {
+                "label": "initialized",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "beneficiary",
+                "type": "t_address",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "cliff",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "duration",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "slicePeriodSeconds",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "revocable",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "amountTotal",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "released",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "revoked",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "8"
+              },
+              {
+                "label": "releaseAtTGE",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    }
+  }
+}

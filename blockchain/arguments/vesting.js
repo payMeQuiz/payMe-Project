@@ -1,3 +1,5 @@
 module.exports = [
-    "0x0", //IERC20 token
+    "0x640B633a9ed4fEE7291Ee27C4D51c3A6139D6A51", //IERC20 token
+    "20", //TGEPERCENTAGE
+    "1661878742" //TGETIME
 ];
