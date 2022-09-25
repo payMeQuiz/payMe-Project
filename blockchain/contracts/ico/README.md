@@ -26,7 +26,8 @@ This inherited function has been disabled because we want investors to only be a
 
 ### buyTokensInBUSD():
 
-Steps:
+> Steps:
+
     1. Input beneficiary wallet address and amount
     2. Check constraints
     3. Send funds to the founder’s wallet
@@ -36,7 +37,8 @@ Steps:
 
 ### finalize():
 
-Steps:
+> Steps:
+
     1. Owner calls the function
     2. Send raised payME Token to vesting contract
     3. Create vesting schedules for each investment. 
