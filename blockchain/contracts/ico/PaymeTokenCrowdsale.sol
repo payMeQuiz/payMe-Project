@@ -109,6 +109,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
         //_weiRaised = _weiRaised.add(weiAmount);
 
         _processPurchase(beneficiary, tokens);
+        
         emit TokensPurchased(_msgSender(), beneficiary, weiAmount, tokens);
 
         _updatePurchasingState(beneficiary, weiAmount);
@@ -157,24 +158,14 @@ FinalizableCrowdsale, PausableCrowdsale  {
     function _processPurchase(address beneficiary, uint256 tokenAmount) 
     override
     internal {
-
-        //Transfer Brought token to vesting Contract
-        //paymeToken.safeTransfer(vestingAddress, tokenAmount);
-
-        // address _beneficiary,
-        // uint256 _start,
-        // uint256 _cliff,
-        // uint256 _duration,
-        // uint256 _slicePeriodSeconds,
-        // bool _revocable,
-        // uint256 _amount
-        // Create Vesting Schedule
-
-
-
+        investors.push(Investor(
+            beneficiary,
+            tokenAmount,
+            true
+        ));
     }
 
-        /**
+    /**
      * @dev Extend parent behavior to update beneficiary contributions.
      * @param beneficiary Token purchaser
      * @param weiAmount Amount of wei contributed
@@ -205,40 +196,37 @@ FinalizableCrowdsale, PausableCrowdsale  {
         //projectTeamVesting = new PaymeTokenVesting(paymeToken,0,0);
         //techincalDevelopersVesting  = new PaymeTokenVesting(paymeToken,0,0);
         //businessDevelopmentVesting = new PaymeTokenVesting(paymeToken,0,0);
+        
         uint256 ptShare = totalSupply.mul(projectTeamPercentage).div(100);
         uint256 tdShare = totalSupply.mul(techincalDevelopersPercentage).div(100);
         uint256 bdShare = totalSupply.mul(businessDevelopmentPercentage).div(100);
-
         uint256 totalShare = ptShare.add(tdShare).add(bdShare);
         uint256 totalSales = totalWei.mul(tokenRate);
-
-
+        
         //Send raised Payme Token to vesting contract
-         
         paymeToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
          
-        // PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
+        PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
 
-        // //Create Vesting shedule for all investor
-        // for(uint i = 0; i < investors.length; i++){
-        //     Investor memory _investor = investors[i];
+        //Create Vesting shedule for all investor
+        for(uint i = 0; i < investors.length; i++){
+            Investor memory _investor = investors[i];
             
-        //     if(_investor.isVested == false){
-        //       vesting.createVestingSchedule(
-        //         _investor.investor,
-        //         TGETime,
-        //         cliff,
-        //         duration,
-        //         1,
-        //         false,
-        //         _investor.investment,
-        //         true
-        //      );
+            if(_investor.isVested == false){
+              vesting.createVestingSchedule(
+                _investor.investor,
+                TGETime,
+                cliff,
+                duration,
+                1,
+                false,
+                _investor.investment,
+                true
+             );
 
-        //     }
+            }
   
-        // }
-
+        }
 
         super._finalization();
     }
