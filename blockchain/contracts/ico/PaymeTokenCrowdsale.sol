@@ -62,7 +62,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
    struct Investor{
        address investor;
        uint256 investment;
-       bool isVested;
    }
 
    //Amount of BUSD
@@ -153,16 +152,20 @@ FinalizableCrowdsale, PausableCrowdsale  {
         super._preValidatePurchase(beneficiary, weiAmount);
     }
 
+    function createInvestor(address beneficiary, uint256 tokenAmount) internal{
+                
+                investors.push(Investor(
+                            beneficiary,
+                            tokenAmount
+                ));
+    }
+
     
 
     function _processPurchase(address beneficiary, uint256 tokenAmount) 
     override
     internal {
-        investors.push(Investor(
-            beneficiary,
-            tokenAmount,
-            true
-        ));
+        createInvestor(beneficiary, tokenAmount);
     }
 
     /**
@@ -212,7 +215,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
         for(uint i = 0; i < investors.length; i++){
             Investor memory _investor = investors[i];
             
-            if(_investor.isVested == false){
               vesting.createVestingSchedule(
                 _investor.investor,
                 TGETime,
@@ -224,7 +226,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
                 true
              );
 
-            }
   
         }
 

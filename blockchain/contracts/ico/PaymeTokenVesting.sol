@@ -56,6 +56,9 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     mapping(address => uint256) private holdersVestingCount;
     mapping(bytes32 => uint256) public TGETokenParticipates;
 
+    address public crowdsales_address;
+
+
     event Released(uint256 amount);
     event Revoked();
     event TokenReleasedAtTGE(address beneficiary, uint256 amount);
@@ -77,10 +80,14 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         _;
     }
 
-    /**
-     * @dev Creates a vesting contract.
-     * @param token_ address of the ERC20 token contract
-     */
+        modifier onlyCrowdsaleOrOwner(){
+        if(msg.sender == crowdsales_address || msg.sender == owner()){
+            _;
+        }
+        
+    }
+
+
 //    constructor(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_)  {     
 //         require(address(token_) != address(0));
         
@@ -91,6 +98,10 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
 
 //     }
 
+    /**
+     * @dev Creates a vesting contract.
+     * @param token_ address of the ERC20 token contract
+     */
     function initialize(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_) public initializer {
           require(address(token_) != address(0));
         
@@ -99,6 +110,8 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         TGEOpeningTime = TGEOpeningTime_;
         TGEPercent = TGEPercent_;
     }
+
+
 
 
     // receive() external payable {}
@@ -151,6 +164,12 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         return vestingSchedulesTotalAmount;
     }
 
+
+    function setCrowdsaleAddress(address _crowdsales_address) external{
+        crowdsales_address = _crowdsales_address;
+    }
+    
+
     /**
     * @dev Returns the address of the ERC20 token managed by the vesting contract.
     */
@@ -182,7 +201,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         bool _releaseAtTGE
     )
         public
-        onlyOwner{
+        onlyCrowdsaleOrOwner{
         require(
             this.getWithdrawableAmount() >= _amount,
             "TokenVesting: cannot create vesting schedule because not sufficient tokens"

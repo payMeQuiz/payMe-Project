@@ -90,7 +90,7 @@ describe('Crowdsales ', function(){
       await vesting.deployed();
 
       //console.log(...crowdsaleArgs)
-      openingTime = Math.round(1+ Date.now()/1000);
+      openingTime = Math.round(5+ Date.now()/1000);
       closingTime = openingTime + 30;
 
       crowdsale = await tokenCrowdsale.deploy(
@@ -150,6 +150,9 @@ describe('Crowdsales ', function(){
     //BUSDT.safeApprove(address(this), weiAmount)
     await expect(deployedBUSDToken.approve(crowdsale.address, 1200))
     .to.emit(deployedBUSDToken, "Approval")
+    
+    console.log("wait! Sleeping...")
+    await sleep(1000*11)
 
     // expect(await testToken.totalSupply()).to.equal(ownerBalance);
     await expect(crowdsale.buyTokensInBUSD(investor.address, amount))
@@ -160,8 +163,8 @@ describe('Crowdsales ', function(){
       ownerBalance.sub(amount)
     );
 
-    //check smart contract address
-    expect(await deployedBUSDToken.balanceOf(crowdsale.address))
+    //check wallet
+    expect(await deployedBUSDToken.balanceOf(WALLET))
     .to.equal(amount);
 
     let amount2 = 901;
@@ -190,10 +193,16 @@ describe('Crowdsales ', function(){
    });
 
    it("Should finalize crowdsales",async function(){
-      //transfer sales to vesting contract
+      // set crowdsale address
+      await vesting.setCrowdsaleAddress(crowdsale.address)
 
-      await expect(crowdsale.finalize()).to.emit(crowdsale, "CrowdsaleFinalized");
 
+      console.log("wait! sleeping...")
+      await sleep(1000*30)
+      await expect(crowdsale.connect(owner).finalize()).to.emit(crowdsale, "CrowdsaleFinalized");
+
+      //Check the number investor in the vesting contract
+      expect(await vesting.getVestingSchedulesCount()).to.equal(2);
       // expect(await deployedBUSDToken.balanceOf(vesting.address))
       // .to.equal(totalSales.BigNumber);
 

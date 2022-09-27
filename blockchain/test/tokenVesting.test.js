@@ -57,11 +57,11 @@ describe("PaymeTokenVesting", function () {
     testToken = await Token.deploy();
     await testToken.deployed();
 
-     tokenVesting = await TokenVesting.deploy(
-      testToken.address,
-      TGEPERCENTAGE,
-      TGETIME
-    );
+
+    tokenVesting = await upgrades.deployProxy(
+      TokenVesting,
+      [testToken.address, TGEPERCENTAGE,TGETIME],
+      {initializer: "initialize"});
 
     await tokenVesting.deployed();
 
@@ -94,7 +94,7 @@ describe("PaymeTokenVesting", function () {
     });
 
     it("Should vest tokens gradually", async function () {
-      // deploy vesting contract
+      // deploy vesting contruhjhact
       await testToken.transfer(tokenVesting.address, ownerBalance)
 
       expect((await tokenVesting.getToken()).toString()).to.equal(
@@ -104,13 +104,19 @@ describe("PaymeTokenVesting", function () {
        //Create Vesting Schedule
      await createVestingSchedule()
 
+     await createVestingSchedule()
+
+
+     console.log("passing 0");
+     expect(await tokenVesting.getVestingSchedulesCount()).to.be.equal(1);
       
-      expect(await tokenVesting.getVestingSchedulesCount()).to.be.equal(1);
+      console.log("passed 1")
       expect(
         await tokenVesting.getVestingSchedulesCountByBeneficiary(
           beneficiary1.address
         )
       ).to.be.equal(1);
+      
 
       // compute vesting schedule id
       const vestingScheduleId =
