@@ -43,3 +43,8 @@ This inherited function has been disabled because we want investors to only be a
     2. Send raised payME Token to vesting contract
     3. Create vesting schedules for each investment. 
 
+# PaymeTokenVesting
+
+On-Chain vesting scheme enabled by smart contracts.
+TokenVesting contract can release its token balance gradually like a typical vesting scheme, with a cliff and vesting period. Optionally revocable by the owner.
+This contract has been built to be upgradable. 
