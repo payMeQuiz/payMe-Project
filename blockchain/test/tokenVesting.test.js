@@ -12,12 +12,23 @@ describe("PaymeTokenVesting", function () {
   let owner;
   let addrs;
   let ownerBalance;
-  let tokenVesting;
+  // let tokenVesting;
   let baseTime = 1662011895;
   let duration = 10000;
   let amount = 100
 
+  const deployVestingToken = async function(TokenVesting){
+    tokenVesting = await upgrades.deployProxy(
+      TokenVesting,
+      [testToken.address, TGEPERCENTAGE,TGETIME],
+      {initializer: "initialize"});
+
+     const e = await tokenVesting.deployed();
+     return e;
+  }
+  
   const createVestingSchedule = async function(
+    deployedTokenVesting,
     startTime = baseTime,
     cliff = 0,
     _duration = duration,
@@ -27,7 +38,7 @@ describe("PaymeTokenVesting", function () {
     _releaseAtTGE = true,
   ){
     // create new vesting schedule
-    await tokenVesting.createVestingSchedule(
+    return await deployedTokenVesting.createVestingSchedule(
       beneficiary1.address,
       startTime,
       cliff,
@@ -58,12 +69,7 @@ describe("PaymeTokenVesting", function () {
     await testToken.deployed();
 
 
-    tokenVesting = await upgrades.deployProxy(
-      TokenVesting,
-      [testToken.address, TGEPERCENTAGE,TGETIME],
-      {initializer: "initialize"});
 
-    await tokenVesting.deployed();
 
     ownerBalance = await testToken.balanceOf(owner.address);
     //console.log(`owner balance: ${ ownerBalance }`);
@@ -82,6 +88,8 @@ describe("PaymeTokenVesting", function () {
 
     it("Should tranfer total supply to vesting contract", async function(){
             // send tokens to vesting contract
+        const tokenVesting = await deployVestingToken(TokenVesting)
+
         await expect(testToken.transfer(tokenVesting.address, ownerBalance))
             .to.emit(testToken, "Transfer")
             .withArgs(owner.address, tokenVesting.address, ownerBalance);
@@ -95,122 +103,37 @@ describe("PaymeTokenVesting", function () {
 
     it("Should vest tokens gradually", async function () {
       // deploy vesting contruhjhact
+      const tokenVesting = await upgrades.deployProxy(
+        TokenVesting,
+        [testToken.address, TGEPERCENTAGE,TGETIME],
+        {initializer: "initialize"});
+  
+       const e = await tokenVesting.deployed();
+       
       await testToken.transfer(tokenVesting.address, ownerBalance)
 
       expect((await tokenVesting.getToken()).toString()).to.equal(
         testToken.address
       );
 
-       //Create Vesting Schedule
-     await createVestingSchedule()
+       console.log("Passing...")
+       //Create Vesting Schedul e
+       await expect(tokenVesting.connect(owner).createVestingSchedule(
+        beneficiary1.address,
+        baseTime,
+        0,
+        duration,
+        1,
+        true,
+        amount,
+        true
+      )).to.emit(tokenVesting, "VestingScheduleCreated");
+     //expect(await createVestingSchedule(tokenVesting)).emit(tokenVesting,"VestingScheduleCreated");
 
-     await createVestingSchedule()
-
-
-     console.log("passing 0");
-     expect(await tokenVesting.getVestingSchedulesCount()).to.be.equal(1);
+    //  console.log("passing 0");
+    //  expect(await tokenVesting.getVestingSchedulesCount()).to.be.equal(1);
       
-      console.log("passed 1")
-      expect(
-        await tokenVesting.getVestingSchedulesCountByBeneficiary(
-          beneficiary1.address
-        )
-      ).to.be.equal(1);
-      
-
-      // compute vesting schedule id
-      const vestingScheduleId =
-        await tokenVesting.computeVestingScheduleIdForAddressAndIndex(
-          beneficiary1.address,
-          0
-        );
-
-      // check that vested amount is 0
-      expect(
-        await tokenVesting.computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(0);
-
-      // set time to half the vesting period
-      const halfTime = baseTime + duration / 2;
-      await tokenVesting.setCurrentTime(halfTime);
-
-      // check that vested amount is half the total amount to vest
-      expect(
-        await tokenVesting
-          .connect(beneficiary1)
-          .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(50);
-
-      // check that only beneficiary can try to release vested tokens
-      await expect(
-        tokenVesting.connect(beneficiary2).release(vestingScheduleId, 100)
-      ).to.be.revertedWith(
-        "TokenVesting: only beneficiary and owner can release vested tokens"
-      );
-
-      // check that beneficiary cannot release more than the vested amount
-      await expect(
-        tokenVesting.connect(beneficiary1).release(vestingScheduleId, 100)
-      ).to.be.revertedWith(
-        "TokenVesting: cannot release tokens, not enough vested tokens"
-      );
-
-      // release 10 tokens and check that a Transfer event is emitted with a value of 10
-      await expect(
-        tokenVesting.connect(beneficiary1).release(vestingScheduleId, 10)
-      )
-        .to.emit(testToken, "Transfer")
-        .withArgs(tokenVesting.address, beneficiary1.address, 10);
-
-      // check that the vested amount is now 40
-      expect(
-        await tokenVesting
-          .connect(beneficiary1)
-          .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(40);
-      let vestingSchedule = await tokenVesting.getVestingSchedule(
-        vestingScheduleId
-      );
-
-      // check that the released amount is 10
-      expect(vestingSchedule.released).to.be.equal(10);
-
-      // set current time after the end of the vesting period
-      await tokenVesting.setCurrentTime(baseTime + duration + 1);
-
-      // check that the vested amount is 90
-      expect(
-        await tokenVesting
-          .connect(beneficiary1)
-          .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(90);
-
-      // beneficiary release vested tokens (45)
-      await expect(
-        tokenVesting.connect(beneficiary1).release(vestingScheduleId, 45)
-      )
-        .to.emit(testToken, "Transfer")
-        .withArgs(tokenVesting.address, beneficiary1.address, 45);
-
-      // owner release vested tokens (45)
-      await expect(tokenVesting.connect(owner).release(vestingScheduleId, 45))
-        .to.emit(testToken, "Transfer")
-        .withArgs(tokenVesting.address, beneficiary1.address, 45);
-      vestingSchedule = await tokenVesting.getVestingSchedule(
-        vestingScheduleId
-      );
-
-      // check that the number of released tokens is 100
-      expect(vestingSchedule.released).to.be.equal(100);
-
-      // check that the vested amount is 0
-      expect(
-        await tokenVesting
-          .connect(beneficiary1)
-          .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(0);
-
-
+  
       /*
        * TEST SUMMARY
        * deploy vesting contract
@@ -255,10 +178,12 @@ describe("PaymeTokenVesting", function () {
 
     it("Should release vested tokens if revoked", async function () {
 
+      const tokenVesting = await deployVestingToken(TokenVesting)
+
       await testToken.transfer(tokenVesting.address, ownerBalance)
 
       //Create Vesting Schedule
-      await createVestingSchedule()
+      await createVestingSchedule(tokenVesting)
 
       // compute vesting schedule id
       const vestingScheduleId =
@@ -277,8 +202,9 @@ describe("PaymeTokenVesting", function () {
     });
 
     it("Should compute vesting schedule index", async function () {
-      // const tokenVesting = await TokenVesting.deploy(testToken.address);
-      // await tokenVesting.deployed();
+      const tokenVesting = await deployVestingToken(TokenVesting)
+
+    
       const expectedVestingScheduleId =
         "0xa279197a1d7a4b7398aa0248e95b8fcc6cdfb43220ade05d01add9c5468ea097";
       expect(
@@ -299,8 +225,8 @@ describe("PaymeTokenVesting", function () {
     });
 
     it("Should check input parameters for createVestingSchedule method", async function () {
-      // const tokenVesting = await TokenVesting.deploy(testToken.address);
-      // await tokenVesting.deployed();
+      const tokenVesting = await deployVestingToken(TokenVesting)
+
       await testToken.transfer(tokenVesting.address, 1000);
       const time = Date.now();
       await expect(
@@ -343,12 +269,13 @@ describe("PaymeTokenVesting", function () {
 
     it("Should release "+TGEPERCENTAGE+"% at TGE", async function(){
 
+      const tokenVesting = await deployVestingToken(TokenVesting)
 
 
       await testToken.transfer(tokenVesting.address, ownerBalance)
 
       //Create Vesting Schedule
-      await createVestingSchedule();
+      await createVestingSchedule(tokenVesting);
 
 
 

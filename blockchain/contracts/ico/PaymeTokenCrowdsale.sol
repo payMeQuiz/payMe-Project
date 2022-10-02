@@ -10,6 +10,7 @@ import "@dtobi59/crowdsale/contracts/crowdsale/validation/TimedCrowdsale.sol";
 import "@dtobi59/crowdsale/contracts/crowdsale/validation/CappedCrowdsale.sol";
 import "@dtobi59/crowdsale/contracts/crowdsale/validation/PausableCrowdsale.sol";
 import "@dtobi59/crowdsale/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
+// import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "../ico/PaymeTokenVesting.sol";
 

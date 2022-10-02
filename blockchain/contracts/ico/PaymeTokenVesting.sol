@@ -61,6 +61,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
 
     event Released(uint256 amount);
     event Revoked();
+    event VestingScheduleCreated(bytes32);
     event TokenReleasedAtTGE(address beneficiary, uint256 amount);
 
     /**
@@ -80,10 +81,12 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         _;
     }
 
-        modifier onlyCrowdsaleOrOwner(){
-        if(msg.sender == crowdsales_address || msg.sender == owner()){
-            _;
-        }
+    modifier onlyCrowdsaleOrOwner(){
+        require(
+            msg.sender == crowdsales_address ||
+            msg.sender == owner(),"No Access");
+         _;
+
         
     }
 
@@ -103,7 +106,9 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
      * @param token_ address of the ERC20 token contract
      */
     function initialize(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_) public initializer {
-          require(address(token_) != address(0));
+        require(address(token_) != address(0));
+        __Ownable_init_unchained();
+        __ReentrancyGuard_init_unchained();
         
         _token = token_;
 
@@ -200,8 +205,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         uint256 _amount,
         bool _releaseAtTGE
     )
-        public
-        onlyCrowdsaleOrOwner{
+    onlyCrowdsaleOrOwner public{
         require(
             this.getWithdrawableAmount() >= _amount,
             "TokenVesting: cannot create vesting schedule because not sufficient tokens"
@@ -230,6 +234,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         uint256 currentVestingCount = holdersVestingCount[_beneficiary];
         holdersVestingCount[_beneficiary] = currentVestingCount.add(1);
         TGETokenParticipates[vestingScheduleId] = 0;
+        emit VestingScheduleCreated(vestingScheduleId);
     }
 
     /**
