@@ -1,6 +1,6 @@
-# Sample Hardhat Project
+# payME Smart contracts
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This contain payME smart contract codes to power the Intial coin offering and the payME platform.
 
 Try running some of the following tasks:
 
