@@ -1,3 +1,4 @@
+// ico/contracts/PaymeTokenVesting.sol
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
@@ -18,7 +19,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     struct VestingSchedule{
-        
+
         bool initialized;
         // beneficiary of tokens after they are released
         address  beneficiary;
