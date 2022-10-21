@@ -1,4 +1,3 @@
-// ico/contracts/PaymeTokenVesting.sol
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
@@ -11,19 +10,20 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-
 /**
  * @title PaymeTokenVesting
  */
 contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     using SafeMathUpgradeable for uint256;
     using SafeERC20Upgradeable for IERC20Upgradeable;
+
     struct VestingSchedule{
+        
         bool initialized;
         // beneficiary of tokens after they are released
         address  beneficiary;
         // cliff period in seconds
-        uint256  cliff;
+        uint256  cliff; 
         // start time of the vesting period
         uint256  start;
         // duration of the vesting period in seconds
@@ -47,9 +47,6 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     uint256 public TGEPercent ;
     uint256 public TGEOpeningTime;
 
-
-
-
     bytes32[] private vestingSchedulesIds;
     mapping(bytes32 => VestingSchedule) private vestingSchedules;
     uint256 private vestingSchedulesTotalAmount;
@@ -57,7 +54,6 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     mapping(bytes32 => uint256) public TGETokenParticipates;
 
     address public crowdsales_address;
-
 
     event Released(uint256 amount);
     event Revoked();

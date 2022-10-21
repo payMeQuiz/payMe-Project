@@ -1,16 +1,15 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/Crowdsale.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/validation/WhitelistCrowdsale.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/validation/TimedCrowdsale.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/validation/CappedCrowdsale.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/validation/PausableCrowdsale.sol";
-import "@dtobi59/crowdsale/contracts/crowdsale/distribution/FinalizableCrowdsale.sol";
-// import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "../crowdsale/Crowdsale.sol";
+import "../crowdsale/validation/WhitelistCrowdsale.sol";
+import "../crowdsale/validation/TimedCrowdsale.sol";
+import "../crowdsale/validation/CappedCrowdsale.sol";
+import "../crowdsale/validation/PausableCrowdsale.sol";
+import "../crowdsale/distribution/FinalizableCrowdsale.sol";
 
 import "../ico/PaymeTokenVesting.sol";
 
