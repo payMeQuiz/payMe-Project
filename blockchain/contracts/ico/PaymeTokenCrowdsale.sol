@@ -107,6 +107,9 @@ FinalizableCrowdsale, PausableCrowdsale  {
     }
 
     function buyTokensInBUSD(address beneficiary, uint256 amount) public nonReentrant payable {
+        require(address(beneficiary) != address(0), "Valid Beneficiary address is required");
+        require(amount > 0, "Amount must be greater than zero(0)");
+
         uint256 weiAmount = amount;
         _preValidatePurchase(beneficiary, weiAmount);
 
