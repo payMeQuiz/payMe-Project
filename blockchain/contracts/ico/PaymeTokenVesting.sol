@@ -11,9 +11,9 @@ import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-/**
+/**********************************************
  * @title PaymeTokenVesting
- */
+ *********************************/
 contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     using SafeMathUpgradeable for uint256;
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -45,8 +45,8 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
 
     // address of the ERC20 token
     IERC20Upgradeable private _token;
-    uint256 public TGEPercent ;
-    uint256 public TGEOpeningTime;
+    uint256 public tgePercent;
+    uint256 public tgeOpeningTime;
 
     bytes32[] private vestingSchedulesIds;
     mapping(bytes32 => VestingSchedule) private vestingSchedules;
@@ -54,7 +54,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     mapping(address => uint256) private holdersVestingCount;
     mapping(bytes32 => uint256) public TGETokenParticipates;
 
-    address public crowdsales_address;
+    address public crowdsalesAddress;
 
     event Released(uint256 amount);
     event Revoked();
@@ -65,7 +65,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     * @dev Reverts if no vesting schedule matches the passed identifier.
     */
     modifier onlyIfVestingScheduleExists(bytes32 vestingScheduleId) {
-        require(vestingSchedules[vestingScheduleId].initialized == true);
+        require(vestingSchedules[vestingScheduleId].initialized);
         _;
     }
 
@@ -73,14 +73,14 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     * @dev Reverts if the vesting schedule does not exist or has been revoked.
     */
     modifier onlyIfVestingScheduleNotRevoked(bytes32 vestingScheduleId) {
-        require(vestingSchedules[vestingScheduleId].initialized == true);
-        require(vestingSchedules[vestingScheduleId].revoked == false);
+        require(vestingSchedules[vestingScheduleId].initialized);
+        require(!vestingSchedules[vestingScheduleId].revoked);
         _;
     }
 
     modifier onlyCrowdsaleOrOwner(){
         require(
-            msg.sender == crowdsales_address ||
+            msg.sender == crowdsalesAddress ||
             msg.sender == owner(),"No Access");
          _;
 
@@ -93,24 +93,30 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         
 //         _token = token_;
 
-//         TGEOpeningTime = TGEOpeningTime_;
-//         TGEPercent = TGEPercent_;
+//         tgeOpeningTime = TGEOpeningTime_;
+//         tgePercent = TGEPercent_;
 
 //     }
 
     /**
      * @dev Creates a vesting contract.
-     * @param token_ address of the ERC20 token contract
-     */
-    function initialize(IERC20Upgradeable token_,uint256 TGEPercent_,uint256 TGEOpeningTime_) public initializer {
-        require(address(token_) != address(0));
+     * @param iToken address of the ERC20 token contract
+     * @param iTGEPercent quota to be released to investors
+     * @param iTGEOpeningTime time when investor will be elible to claim their token
+    */
+
+    function initialize(IERC20Upgradeable iToken,uint256 iTGEPercent,uint256 iTGEOpeningTime) public initializer {
+        require(address(iToken) != address(0));
+        require(iTGEPercent > 0, "TGE Amount must be greater than 0");
+        require(iTGEOpeningTime > 0, "TGE Openning time must be greater than 0");
+
         __Ownable_init_unchained();
         __ReentrancyGuard_init_unchained();
         
-        _token = token_;
+        _token = iToken;
 
-        TGEOpeningTime = TGEOpeningTime_;
-        TGEPercent = TGEPercent_;
+        tgeOpeningTime = iTGEOpeningTime;
+        tgePercent = iTGEPercent;
     }
 
 
@@ -124,11 +130,11 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     * @dev Returns the number of vesting schedules associated to a beneficiary.
     * @return the number of vesting schedules
     */
-    function getVestingSchedulesCountByBeneficiary(address _beneficiary)
+    function getVestingSchedulesCountByBeneficiary(address iBeneficiary)
     external
     view
     returns(uint256){
-        return holdersVestingCount[_beneficiary];
+        return holdersVestingCount[iBeneficiary];
     }
 
     /**
@@ -167,8 +173,8 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     }
 
 
-    function setCrowdsaleAddress(address _crowdsales_address) external{
-        crowdsales_address = _crowdsales_address;
+    function setCrowdsaleAddress(address icrowdsalesAddress) external{
+        crowdsalesAddress = icrowdsalesAddress;
     }
     
 
@@ -184,52 +190,52 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
 
     /**
     * @notice Creates a new vesting schedule for a beneficiary.
-    * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
-    * @param _start start time of the vesting period
-    * @param _cliff duration in seconds of the cliff in which tokens will begin to vest
-    * @param _duration duration in seconds of the period in which the tokens will vest
-    * @param _slicePeriodSeconds duration of a slice period for the vesting in seconds
-    * @param _revocable whether the vesting is revocable or not
-    * @param _amount total amount of tokens to be released at the end of the vesting
+    * @param iBeneficiary address of the beneficiary to whom vested tokens are transferred
+    * @param iStart start time of the vesting period
+    * @param iCliff duration in seconds of the cliff in which tokens will begin to vest
+    * @param iDuration duration in seconds of the period in which the tokens will vest
+    * @param iSlicePeriodSeconds duration of a slice period for the vesting in seconds
+    * @param iRevocable whether the vesting is revocable or not
+    * @param iAmount total amount of tokens to be released at the end of the vesting
     */
     function createVestingSchedule(
-        address _beneficiary,
-        uint256 _start,
-        uint256 _cliff,
-        uint256 _duration,
-        uint256 _slicePeriodSeconds,
-        bool _revocable,
-        uint256 _amount,
-        bool _releaseAtTGE
+        address iBeneficiary,
+        uint256 iStart,
+        uint256 iCliff,
+        uint256 iDuration,
+        uint256 iSlicePeriodSeconds,
+        bool iRevocable,
+        uint256 iAmount,
+        bool iReleaseAtTGE
     )
     onlyCrowdsaleOrOwner public{
         require(
-            this.getWithdrawableAmount() >= _amount,
+            this.getWithdrawableAmount() >= iAmount,
             "TokenVesting: cannot create vesting schedule because not sufficient tokens"
         );
-        require(_duration > 0, "TokenVesting: duration must be > 0");
-        require(_amount > 0, "TokenVesting: amount must be > 0");
-        require(_slicePeriodSeconds >= 1, "TokenVesting: slicePeriodSeconds must be >= 1");
-        bytes32 vestingScheduleId = this.computeNextVestingScheduleIdForHolder(_beneficiary);
-        uint256 cliff = _start.add(_cliff);
+        require(iDuration > 0, "TokenVesting: duration must be > 0");
+        require(iAmount > 0, "TokenVesting: amount must be > 0");
+        require(iSlicePeriodSeconds >= 1, "TokenVesting: slicePeriodSeconds must be >= 1");
+        bytes32 vestingScheduleId = this.computeNextVestingScheduleIdForHolder(iBeneficiary);
+        uint256 cliff = iStart.add(iCliff);
         vestingSchedules[vestingScheduleId] = VestingSchedule(
             true,
-            _beneficiary,
+            iBeneficiary,
             cliff,
-            _start,
-            _duration,
-            _slicePeriodSeconds,
-            _revocable,
-            _amount,
+            iStart,
+            iDuration,
+            iSlicePeriodSeconds,
+            iRevocable,
+            iAmount,
             0,
             false,
-            _releaseAtTGE
+            iReleaseAtTGE
         );
 
-        vestingSchedulesTotalAmount = vestingSchedulesTotalAmount.add(_amount);
+        vestingSchedulesTotalAmount = vestingSchedulesTotalAmount.add(iAmount);
         vestingSchedulesIds.push(vestingScheduleId);
-        uint256 currentVestingCount = holdersVestingCount[_beneficiary];
-        holdersVestingCount[_beneficiary] = currentVestingCount.add(1);
+        uint256 currentVestingCount = holdersVestingCount[iBeneficiary];
+        holdersVestingCount[iBeneficiary] = currentVestingCount.add(1);
         TGETokenParticipates[vestingScheduleId] = 0;
         emit VestingScheduleCreated(vestingScheduleId);
     }
@@ -243,7 +249,7 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         onlyOwner
         onlyIfVestingScheduleNotRevoked(vestingScheduleId){
         VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
-        require(vestingSchedule.revocable == true, "TokenVesting: vesting is not revocable");
+        require(vestingSchedule.revocable, "TokenVesting: vesting is not revocable");
         uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
         if(vestedAmount > 0){
             release(vestingScheduleId, vestedAmount);
@@ -283,18 +289,24 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
             "ReleaseTokenAtTGE: only investors can claim token at TGE"
         );
 
+
+
         uint256 currentTime = getCurrentTime();
 
 
-        require(currentTime >= TGEOpeningTime, "TGE: time not reached!");
+        require(currentTime >= tgeOpeningTime, "TGE: time not reached!");
         require(TGETokenParticipates[vestingScheduleId] == 0, "TGE: Token Already claimed");
-
-        uint256 TGEReleaseAmount = vestingSchedule.amountTotal.mul(TGEPercent).div(100);
+        
+        uint256 TGEReleaseAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
+        
         vestingSchedule.released = vestingSchedule.released.add(TGEReleaseAmount);
+
         TGETokenParticipates[vestingScheduleId] = TGEReleaseAmount;
 
         address payable beneficiaryPayable = payable(vestingSchedule.beneficiary);
         
+        vestingSchedulesTotalAmount = vestingSchedulesTotalAmount.sub(TGEReleaseAmount);
+
         _token.safeTransfer(beneficiaryPayable, TGEReleaseAmount);
 
         emit TokenReleasedAtTGE(beneficiaryPayable,TGEReleaseAmount);
@@ -321,6 +333,8 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
             isBeneficiary || isOwner,
             "TokenVesting: only beneficiary and owner can release vested tokens"
         );
+
+
         uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
         require(vestedAmount >= amount, "TokenVesting: cannot release tokens, not enough vested tokens");
         vestingSchedule.released = vestingSchedule.released.add(amount);
@@ -416,28 +430,36 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         uint256 currentTime = getCurrentTime();
 
         // uint256 amount = vestingSchedule.amountTotal;
-        // if(currentTime >= TGEOpeningTime){
-        //    uint256 TGERelease = vestingSchedule.amountTotal.mul(TGEPercent).div(100);
+        // if(currentTime >= tgeOpeningTime){
+        //    uint256 TGERelease = vestingSchedule.amountTotal.mul(tgePercent).div(100);
         //    releaseAmount.add(TGERelease);
         //    return 20;
         // }
 
         //return 30;
 
-        if ((currentTime < vestingSchedule.cliff) || vestingSchedule.revoked == true) {
+        if ((currentTime < vestingSchedule.cliff) || vestingSchedule.revoked) {
             return 0;
-        } else if (currentTime >= vestingSchedule.start.add(vestingSchedule.duration)) {
+        } else if (currentTime >= vestingSchedule.start.add(vestingSchedule.duration)) { 
+            //time has elapsed -> release all 
+        
             return vestingSchedule.amountTotal.sub(vestingSchedule.released);
         } else {
+            //compute daily vesting amount
             //vested amount = amount * ( current time - start time )/ duration
             uint256 timeFromStart = currentTime.sub(vestingSchedule.start);
-            uint secondsPerSlice = vestingSchedule.slicePeriodSeconds;
-            uint256 vestedSlicePeriods = timeFromStart.div(secondsPerSlice);
-            uint256 vestedSeconds = vestedSlicePeriods.mul(secondsPerSlice);
-            uint256 vestedAmount = vestingSchedule.amountTotal.mul(vestedSeconds).div(vestingSchedule.duration);
+            uint256 vestedAmount = vestingSchedule.amountTotal.mul(timeFromStart).div(vestingSchedule.duration);
+            if(currentTime >= tgeOpeningTime){
+               uint256 tgeAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
+               vestedAmount.add(tgeAmount);
+            }
             vestedAmount = vestedAmount.sub(vestingSchedule.released);
             return vestedAmount;
         }
+
+
+
+
     }
 
     function getCurrentTime()

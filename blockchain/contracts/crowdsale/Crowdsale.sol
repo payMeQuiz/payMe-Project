@@ -127,8 +127,6 @@ contract Crowdsale is Context, ReentrancyGuard, AccessControl {
         // calculate token amount to be created
         uint256 tokens = _getTokenAmount(weiAmount);
 
-        // update state
-        _weiRaised = _weiRaised.add(weiAmount);
 
         _processPurchase(beneficiary, tokens);
         emit TokensPurchased(_msgSender(), beneficiary, weiAmount, tokens);
@@ -191,7 +189,9 @@ contract Crowdsale is Context, ReentrancyGuard, AccessControl {
      * @param weiAmount Value in wei involved in the purchase
      */
     function _updatePurchasingState(address beneficiary, uint256 weiAmount) virtual internal {
-        // solhint-disable-previous-line no-empty-blocks
+       
+        _weiRaised.add(weiAmount);   
+        
     }
 
     /**

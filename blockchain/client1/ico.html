@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>payME ICO Page</title>
+</head>
+<body>
+    <button onclick="connectWallet()" >Connect Wallet</button>
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+<script src="abi/PaymeTokenCrowdsale.js"></script>
+<script>
+    // alert("Hello world!");
+
+    let crowdsalecontractAddress = "0x70014D93BfF91BCe06ffB9Ad3aD1936647004521";
+   
+    console.log(crowdsaleContractABI);
+    let eth;
+
+    if (typeof window !== "undefined") {
+      eth = window.ethereum;
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    console.log(signer)
+
+    const getEthereumContract = () => {
+        const transactionContract = new Contract(
+            contractAddress,
+            contractABI,
+            signer
+        );
+
+        return transactionContract;
+    };
+
+    const connectWallet = async () => {
+        metamask = eth;
+        try {
+        console.log("Connectin metamask!");
+        if (!metamask) return alert("Please install metamask ");
+            const accounts = await metamask.request({
+                method: "eth_requestAccounts",
+            });
+            console.log(accounts[0]);
+        } 
+        catch (error) {
+        console.error(error);
+          throw new Error("No ethereum object.");
+        }
+    };
+
+
+
+</script>

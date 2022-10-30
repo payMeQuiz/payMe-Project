@@ -44,12 +44,12 @@ contract MockCrowdsale is PaymeTokenCrowdsale{
         mockTime = _time;
     }
 
-    function getCurrentTime()
-        internal
-        virtual
-        override
-        view
-        returns(uint256){
-        return mockTime;
-    }
+    // function getCurrentTime()
+    //     internal
+    //     virtual
+    //     override
+    //     view
+    //     returns(uint256){
+    //     return mockTime;
+    // }
 }

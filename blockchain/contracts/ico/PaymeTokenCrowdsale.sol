@@ -17,6 +17,7 @@ error InsufficientBalance(uint256 balance, uint256 expected);
 error IndividuallyMinimumCappedCrowdsale(uint256);
 error IndividuallyMaximumCappedCrowdsale(uint256);
 error NotAllowed(address);
+error TotalExceedTotalSupply(uint256);
 
 
 contract PaymeTokenCrowdsale is Ownable, 
@@ -29,9 +30,9 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
    address public vestingAddress;
 
-   IERC20 public BUSDT;
+   IERC20 public bUSDT;
 
-   uint256 public TGETime;
+   uint256 public tokenGenerationEventTime;
 
    uint256 public cliff;
 
@@ -46,9 +47,9 @@ FinalizableCrowdsale, PausableCrowdsale  {
     // Business Development comprises 20% of the Max supply, 
 
    //Percentage
-   uint256 public projectTeamPercentage = 10;
-   uint256 public techincalDevelopersPercentage = 5;
-   uint256 public businessDevelopmentPercentage = 20;
+   uint256 public constant projectTeamPercentage = 10;
+   uint256 public constant techincalDevelopersPercentage = 5;
+   uint256 public constant businessDevelopmentPercentage = 20;
 
    //Vesting contract 
     // PaymeTokenVesting public projectTeamVesting;
@@ -62,34 +63,44 @@ FinalizableCrowdsale, PausableCrowdsale  {
    struct Investor{
        address investor;
        uint256 investment;
+       bool created;
    }
 
-   //Amount of BUSD
-   uint256 public USDTRaised; 
 
    constructor(
-        IERC20 _BUSDT,
-        address _vestingAddress,
-        uint256 rate,    // rate in PayME
-        address payable wallet,
-        IERC20 _token,
-        uint256 _cap,
-        uint256 _openingTime,
-        uint256 _closingTime,
-        uint256 _TGETime,
-        uint256 _duration
+        IERC20 iBUSDT,
+        address iVestingAddress,
+        uint256 iRate,    // rate in PayME
+        address payable iWallet,
+        IERC20 iToken,
+        uint256 iCap,
+        uint256 iOpeningTime,
+        uint256 iClosingTime,
+        uint256 iTGETime,
+        uint256 iDuration
         
     )
-        Crowdsale(rate, wallet, _token ) 
-        CappedCrowdsale(_cap)
-        TimedCrowdsale(_openingTime, _closingTime)
+        Crowdsale(iRate, iWallet, iToken ) 
+        CappedCrowdsale(iCap)
+        TimedCrowdsale(iOpeningTime, iClosingTime)
         
     {
-        BUSDT = _BUSDT;
-        TGETime = _TGETime;
+        require(address(iBUSDT) != address(0), "Valid BUSD required");
+        require(iVestingAddress != address(0), "Valid Vesting contract required");
+        require(iCap != uint256(0), "Cap must be greater than Zero");
+        require(iOpeningTime >= block.timestamp, "opening time is before current time");
+        require(iClosingTime > iOpeningTime, "opening time is not before closing time");
+        require(iTGETime > iOpeningTime, "Token Generation Event time is not before the closing time");
+        require(iDuration > 15768000, "Duration must be greater than 6months");
+
+
+
+
+        bUSDT = iBUSDT;
+        tokenGenerationEventTime = iTGETime;
         cliff = 0;
-        duration = _duration;
-        vestingAddress = _vestingAddress;
+        duration = iDuration;
+        vestingAddress = iVestingAddress;
         minimumSale = 100;
         maximumSale = 1000;
 
@@ -102,8 +113,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
         // calculate token amount to be created
         uint256 tokens = _getTokenAmount(weiAmount);
 
-        BUSDT.safeTransferFrom(msg.sender, wallet(), weiAmount);
-
         // update state
         //_weiRaised = _weiRaised.add(weiAmount);
 
@@ -113,7 +122,8 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
         _updatePurchasingState(beneficiary, weiAmount);
 
-        _forwardFunds();
+        _forwardFunds(weiAmount);
+
         _postValidatePurchase(beneficiary, weiAmount);
     }
 
@@ -121,10 +131,11 @@ FinalizableCrowdsale, PausableCrowdsale  {
         revert NotAllowed(beneficiary);
     }
 
-    function _forwardFunds(uint256 amount) internal {
-        //BUSDT.transfer(wallet(), amount);
-        //_wallet.transfer(msg.value);
-        //Funds are automatically sent to the wallet
+    function _forwardFunds(uint256 weiAmount) internal {
+         //Send funds to the wallet
+        bUSDT.safeTransferFrom(msg.sender, wallet(), weiAmount);
+
+       
     }
 
     
@@ -133,7 +144,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
     internal 
     override(CappedCrowdsale, PausableCrowdsale, WhitelistCrowdsale, TimedCrowdsale)
     view {
-        uint256 beneficiaryBalance = BUSDT.balanceOf(msg.sender);
+        uint256 beneficiaryBalance = bUSDT.balanceOf(msg.sender);
 
         //Ensure that team owner has funds to create challenge
         if (weiAmount > beneficiaryBalance) {
@@ -156,7 +167,8 @@ FinalizableCrowdsale, PausableCrowdsale  {
                 
                 investors.push(Investor(
                             beneficiary,
-                            tokenAmount
+                            tokenAmount,
+                            false
                 ));
     }
 
@@ -175,6 +187,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
      */
     function _updatePurchasingState(address beneficiary, uint256 weiAmount) override internal {
         super._updatePurchasingState(beneficiary, weiAmount);
+
         _contributions[beneficiary] = _contributions[beneficiary].add(weiAmount);
     }
 
@@ -189,16 +202,10 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
         uint256 totalSupply = paymeToken.totalSupply();
 
-        // uint256  projectTeamPercentage = 10;
-        // uint256  techincalDevelopersPercentage = 5;
-        // uint256  businessDevelopmentPercentage = 20;
 
         uint256 totalWei =  weiRaised();
         uint256 tokenRate = rate();
 
-        //projectTeamVesting = new PaymeTokenVesting(paymeToken,0,0);
-        //techincalDevelopersVesting  = new PaymeTokenVesting(paymeToken,0,0);
-        //businessDevelopmentVesting = new PaymeTokenVesting(paymeToken,0,0);
         
         uint256 ptShare = totalSupply.mul(projectTeamPercentage).div(100);
         uint256 tdShare = totalSupply.mul(techincalDevelopersPercentage).div(100);
@@ -207,29 +214,48 @@ FinalizableCrowdsale, PausableCrowdsale  {
         uint256 totalSales = totalWei.mul(tokenRate);
         
         //Send raised Payme Token to vesting contract
+
+        //check if totalShare + totalSales <= totalSupply 
+        uint total = totalShare.add(totalSales);
+        if(total >  totalSupply){
+          revert TotalExceedTotalSupply(total);
+        }
+        
         paymeToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
          
-        PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
-
         //Create Vesting shedule for all investor
-        for(uint i = 0; i < investors.length; i++){
+        createInvestors();
+
+        super._finalization();
+    }
+
+    function createInvestors() public {
+       require(hasClosed(), "FinalizableCrowdsale: not closed");
+
+       PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
+
+      for(uint i = 0; i < investors.length; i++){
             Investor memory _investor = investors[i];
+
+            if(_investor.created){
+                continue;
+            }
             
-              vesting.createVestingSchedule(
+            vesting.createVestingSchedule(
                 _investor.investor,
-                TGETime,
+                tokenGenerationEventTime,
                 cliff,
                 duration,
                 1,
                 false,
                 _investor.investment,
                 true
-             );
+            );
 
-  
+            _investor.created = true;
         }
 
-        super._finalization();
+    
     }
 
     /**
@@ -240,13 +266,13 @@ FinalizableCrowdsale, PausableCrowdsale  {
          super.finalize();
     }
 
-    function getCurrentTime()
-        internal
-        virtual
-        view
-        returns(uint256){
-        return block.timestamp;
-    }
+    // function getCurrentTime()
+    //     internal
+    //     virtual
+    //     view
+    //     returns(uint256){
+    //     return block.timestamp;
+    // }
 
     
 

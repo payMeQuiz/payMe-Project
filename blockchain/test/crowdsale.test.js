@@ -43,6 +43,8 @@ describe('Crowdsales ', function(){
     let deployedBUSDToken;
     let maxCap = 1000;
     let totalSale;
+    let tgeTime;
+    let duration = 15778800;
 
     //"0xf5ddd805fa96b7c3d4f3ea55114f966ab9aad1de73aff48d008717b66678bb36" 
     //const ROLE = ethers.utils.soliditySha3('INVESTOR_WHITELISTED');
@@ -92,6 +94,7 @@ describe('Crowdsales ', function(){
       //console.log(...crowdsaleArgs)
       openingTime = Math.round(5+ Date.now()/1000);
       closingTime = openingTime + 30;
+      tgeTime = closingTime + 30
 
       crowdsale = await tokenCrowdsale.deploy(
         deployedBUSDToken.address,
@@ -102,8 +105,8 @@ describe('Crowdsales ', function(){
         PRESALE_CAP,
         openingTime,
         closingTime,
-        TGETIME,
-        DURATION
+        tgeTime,
+        duration
       );
       await crowdsale.deployed();
 
