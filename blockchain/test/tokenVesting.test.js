@@ -5,7 +5,7 @@ const {
   TGETIME
 } = require("../helper-config");
 
-describe("PaymeTokenVesting", function () {
+describe("payMETokenVesting", function () {
   let Token;
   let testToken;
   let TokenVesting;
@@ -52,7 +52,7 @@ describe("PaymeTokenVesting", function () {
 
   before(async function () {
 
-    Token = await ethers.getContractFactory("PaymeToken");
+    Token = await ethers.getContractFactory("payMEToken");
     TokenVesting = await ethers.getContractFactory("MockTokenVesting");
 
   });

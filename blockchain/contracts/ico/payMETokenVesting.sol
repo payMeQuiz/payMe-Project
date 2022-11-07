@@ -1,4 +1,4 @@
-// ico/contracts/PaymeTokenVesting.sol
+// ico/contracts/payMETokenVesting.sol
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
@@ -12,9 +12,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**********************************************
- * @title PaymeTokenVesting
+ * @title payMETokenVesting
  *********************************/
-contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
+contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     using SafeMathUpgradeable for uint256;
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -171,7 +171,6 @@ contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     returns(uint256){
         return vestingSchedulesTotalAmount;
     }
-
 
     function setCrowdsaleAddress(address icrowdsalesAddress) external{
         crowdsalesAddress = icrowdsalesAddress;

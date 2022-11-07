@@ -229,64 +229,64 @@
             "offset": 0,
             "slot": "151",
             "type": "t_contract(IERC20Upgradeable)419",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:46"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:46"
           },
           {
             "label": "TGEPercent",
             "offset": 0,
             "slot": "152",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:47"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:47"
           },
           {
             "label": "TGEOpeningTime",
             "offset": 0,
             "slot": "153",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:48"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:48"
           },
           {
             "label": "vestingSchedulesIds",
             "offset": 0,
             "slot": "154",
             "type": "t_array(t_bytes32)dyn_storage",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:53"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:53"
           },
           {
             "label": "vestingSchedules",
             "offset": 0,
             "slot": "155",
             "type": "t_mapping(t_bytes32,t_struct(VestingSchedule)1882_storage)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:54"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:54"
           },
           {
             "label": "vestingSchedulesTotalAmount",
             "offset": 0,
             "slot": "156",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:55"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:55"
           },
           {
             "label": "holdersVestingCount",
             "offset": 0,
             "slot": "157",
             "type": "t_mapping(t_address,t_uint256)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:56"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:56"
           },
           {
             "label": "TGETokenParticipates",
             "offset": 0,
             "slot": "158",
             "type": "t_mapping(t_bytes32,t_uint256)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:57"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:57"
           }
         ],
         "types": {
@@ -323,7 +323,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(VestingSchedule)1882_storage)": {
-            "label": "mapping(bytes32 => struct PaymeTokenVesting.VestingSchedule)",
+            "label": "mapping(bytes32 => struct payMETokenVesting.VestingSchedule)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_uint256)": {
@@ -331,7 +331,7 @@
             "numberOfBytes": "32"
           },
           "t_struct(VestingSchedule)1882_storage": {
-            "label": "struct PaymeTokenVesting.VestingSchedule",
+            "label": "struct payMETokenVesting.VestingSchedule",
             "members": [
               {
                 "label": "initialized",
@@ -480,72 +480,72 @@
             "offset": 0,
             "slot": "151",
             "type": "t_contract(IERC20Upgradeable)419",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:47"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:47"
           },
           {
             "label": "tgePercent",
             "offset": 0,
             "slot": "152",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:48"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:48"
           },
           {
             "label": "tgeOpeningTime",
             "offset": 0,
             "slot": "153",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:49"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:49"
           },
           {
             "label": "vestingSchedulesIds",
             "offset": 0,
             "slot": "154",
             "type": "t_array(t_bytes32)dyn_storage",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:51"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:51"
           },
           {
             "label": "vestingSchedules",
             "offset": 0,
             "slot": "155",
             "type": "t_mapping(t_bytes32,t_struct(VestingSchedule)6153_storage)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:52"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:52"
           },
           {
             "label": "vestingSchedulesTotalAmount",
             "offset": 0,
             "slot": "156",
             "type": "t_uint256",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:53"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:53"
           },
           {
             "label": "holdersVestingCount",
             "offset": 0,
             "slot": "157",
             "type": "t_mapping(t_address,t_uint256)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:54"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:54"
           },
           {
             "label": "TGETokenParticipates",
             "offset": 0,
             "slot": "158",
             "type": "t_mapping(t_bytes32,t_uint256)",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:55"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:55"
           },
           {
             "label": "crowdsalesAddress",
             "offset": 0,
             "slot": "159",
             "type": "t_address",
-            "contract": "PaymeTokenVesting",
-            "src": "contracts/ico/PaymeTokenVesting.sol:57"
+            "contract": "payMETokenVesting",
+            "src": "contracts/ico/payMETokenVesting.sol:57"
           },
           {
             "label": "mockTime",
@@ -590,7 +590,7 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_struct(VestingSchedule)6153_storage)": {
-            "label": "mapping(bytes32 => struct PaymeTokenVesting.VestingSchedule)",
+            "label": "mapping(bytes32 => struct payMETokenVesting.VestingSchedule)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_bytes32,t_uint256)": {
@@ -598,7 +598,7 @@
             "numberOfBytes": "32"
           },
           "t_struct(VestingSchedule)6153_storage": {
-            "label": "struct PaymeTokenVesting.VestingSchedule",
+            "label": "struct payMETokenVesting.VestingSchedule",
             "members": [
               {
                 "label": "initialized",

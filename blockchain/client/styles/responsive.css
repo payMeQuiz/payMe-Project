@@ -1,0 +1,270 @@
+@media(max-width: 1200px){
+	.container{max-width: 1140px;}
+}
+
+@media(max-width: 1199px){
+	.container{max-width: 960px;}
+	.ptb-100 {padding-top: 80px; padding-bottom: 80px;}
+	.pb-65 {padding-bottom: 50px;}
+	.pb-80 {padding-bottom: 50px;}
+	.pt-100 {padding-top: 80px;}
+	.pb-55 {padding-bottom: 35px;}
+	.pb-100 {padding-bottom: 60px;}
+
+	/*----- Home Page -----*/
+	.menu ul li{padding: 0px 20px;}
+	.menu ul li a{font-size: 14px;}
+	.signin {margin-left: 20px;}
+	.signin .btn {padding: 9px 20px;}
+	.home-banner {padding: 190px 0px 110px 0px;}
+
+	/*----- Home Page Tow -----*/
+	.coins-counter-loop li{padding: 0px 15px;}
+	.coins-counter-loop li span {width: 65px; height: 65px; line-height: 65px; font-size: 30px;}
+	.coins-counter-loop li:before {top: 25px;}
+	.coins-counter-loop li:after {top: 37px;}
+	.feature-part-2 {padding-bottom: 50px;}
+	.feature-box-2 .frontend, .feature-box-2 .backend {padding: 30px;}
+	.faq-part-2 .faq-tab {padding: 30px 30px;}
+
+	/*----- Roadmap Page -----*/
+	.roadmap-main-content{max-width: 347px;}
+	.roadmap-content-box {margin-bottom: 100px;}
+
+	/*----- Token Sale Page -----*/
+	.token-sale-counter .coins-counter-loop li {padding: 0px 15px;}
+	.token-sale-counter .coins-counter-loop li span {font-size: 40px; line-height: 40px;}
+	.token-sale-counter .coins-counter-loop li:after{top: 25px;}
+
+}
+@media(min-width: 992px){
+	/*----- Menu Hover -----*/
+	.menu > ul > li:hover > a:before {width: 100%;}
+	.menu ul li:hover.mega-menu:before{transform: rotate(180deg);}
+	.menu ul li:hover > ul {top: 48px; visibility: visible; opacity: 1;}
+	.menu ul li:hover > ul ul {top: 31px; visibility: hidden; opacity: 0;}
+	.menu ul ul li:hover ul {top: 0px; visibility: visible; opacity: 1;}
+	.menu ul ul li:hover > a {padding-left: 30px;}
+	.menu ul ul li:hover > a:before{width: 5px;}
+	/*----- Menu Hover End-----*/
+
+	/*----- Mega Menu -----*/
+	.menu ul ul{position: absolute; left: 6px; min-width: 250px; text-align: left; z-index: 1; top: 70px; visibility: hidden; opacity: 0; box-shadow: 0px 0px 10px 1px rgb(58, 7, 152, .95); border-radius: 5px;}
+	.menu ul ul li{display: block; padding: 0;}
+	.menu ul ul li a{display: block; padding: 8px 20px; border-bottom: 1px solid; text-transform: unset; font-size: 15px;}
+	.menu ul ul li a:before{content: ""; position: absolute; top: 0; left: 0; width: 0px; height: 100%; transition: all 400ms ease;}
+	.menu ul li:last-child a {border-bottom: 0;}
+	.menu ul ul ul{left: 100%; top: 0;}
+	.mega-menu:before{content: "\f107"; font-family: fontawesome; position: absolute; right: 5px; transition: all 400ms ease; font-size: 20px;}
+	.menu ul ul li.mega-menu:before{top: 8px;}
+	/*----- Mega Menu End-----*/
+}
+@media(max-width: 991px){
+	.container{max-width: 720px;}
+	.ptb-100 {padding-top: 60px; padding-bottom: 60px;}
+	.pb-65 {padding-bottom: 35px;}
+	.pt-100 {padding-top: 60px;}
+	.pb-80 {padding-bottom: 30px;}
+	.pr-75 {padding-right: 25px;}
+	.mb-r-30{margin-bottom: 30px;}
+	.justify-center-r{justify-content: center; display: flex;}
+	.owl-dots {padding-top: 30px;}
+	.order-r-1{order: 1;}
+	.order-r-2{order: 2;}
+	.heading-title {font-size: 35px; padding-bottom: 10px;}
+	.heading-title-2 {font-size: 35px;}
+	.sub-heading-2 {font-size: 20px;}
+
+	/*----- Home Page -----*/
+	header {padding: 20px 0px;}
+	.menu {display: none; position: fixed; top: 65px; left: 0; width: 100%; height: calc(100% - 65px); box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 30%);overflow-y: auto;}
+	header.fixed .menu{top: 54px;height: calc(100% - 54px);}
+	.menu > ul {display: block !important; text-align: left; padding-top: 10px;}
+	.menu ul li{display: block; padding: 0; border-bottom: 1px solid #da4bfd;}
+	.opener{display: block;}
+	.menu-toggle{display: block;right: 13px;}
+	.mega-menu:before{content: unset;}
+	.menu ul li a{padding: 8px 15px; display: block;}
+	.signin {display: block !important; text-align: left; margin: 0;}
+	.signin .btn {border: 0; padding: 8px 15px; border-bottom: 1px solid #da4bfd; display: block; text-align: left; border-radius: 0; font-size: 14px;}
+	.menu ul ul {padding-top: 0; padding-left: 20px; display: none; transition: unset;}
+	.menu ul ul li{border: 0;}
+	.menu ul ul li a{border-bottom: 0 !important;     text-transform: unset;}
+	.home-banner {padding: 160px 0px 100px 0px;}
+	.banner-heading {font-size: 35px;}
+	.work-process-title {font-size: 25px;}
+	.work-box img{max-width: 305px;display: block;margin: 0px auto;}
+	.feature-part {padding-bottom: 30px;}
+	.feature-contain {padding-top: 14px;}
+	.feature-title {font-size: 20px;}
+	.team-part {padding-bottom: 15px;}
+	.team-img {width: 125px; height: 125px;}
+	.team-des {width: calc(100% - 125px);}
+	.token-sale .heading-des {max-width: unset;}
+	.ico-apps .heading-des{max-width: 100%;}
+
+	/*----- Home Page Tow -----*/
+	.banner-heading-tow {font-size: 35px;}
+	.coin-counter {border-radius: 40px; padding: 20px;}
+	.coins-counter-loop li {padding: 0px 12px;}
+	.coins-counter-loop li span {width: 48px; height: 48px; line-height: 48px; font-size: 24px;}
+	.coins-counter-loop li .coin-day{font-size: 12px;}
+	.coins-counter-loop li:before {top: 17px;}
+	.coins-counter-loop li:after {top: 27px;}
+	.coins-counter-loop {padding-bottom: 20px;}
+	.coins-progress{margin-bottom: 30px;}
+	.roadmap-des{padding: 0px 10px;}
+	.ico-apps-2 .heading-des{max-width: 100%;}
+	.ico-apps-2 .ico-apps-img {margin-top: 30px;}
+
+	/*----- About Page -----*/
+	.sub-page-banner {padding-top: 120px; padding-bottom: 80px;}
+	.about-main .work-process-title{max-width: 100%;}
+	.about-main .work-des{max-width: 100%;}
+
+	/*----- Blog List Page -----*/
+	.blog-search {margin-top: 50px;}
+
+	/*----- Blog Detail Page -----*/
+	.blog-detail-tag ul li a {padding: 8px 20px;}
+
+	/*----- Roadmap Page -----*/
+	.roadmap-main-content {max-width: 300px; padding: 10px 15px;}
+	.roadmap-main-content:before{width: 45px; left: -45px;}
+	.roadmap-content-box:nth-child(2n + 0) .roadmap-main-content:before {right: -45px;}
+	.roadmap-small-round{width: 24px; height: 24px; left: -57px;}
+	.roadmap-small-round:before{width: 13px; height: 13px;}
+	.roadmap-content-box:nth-child(2n + 0) .roadmap-small-round {right: -57px;}
+
+	/*----- Contact Page -----*/
+	.contact-form .blog-comment-heading {font-size: 25px;}
+	.contact-map #map {width: 100%; height: 350px;}
+
+	/*----- Token Sale Page -----*/
+	.token-sale-counter{margin-bottom: 30px;}
+
+	/*----- Footer -----*/
+	footer.bg-pattern{padding-bottom: 30px;}
+	.footer {padding-bottom: 30px;}
+	.subscribe {padding-top: 30px;}
+	.copyright {padding-top: 30px;}
+	.copyright p {text-align: center;}
+	.copyright ul {text-align: center; margin-top: 20px;}
+}
+
+@media(max-width: 767px){
+	.btn {padding: 6px 15px;}
+	.ptb-100 {padding-top: 40px; padding-bottom: 40px;}
+	.pt-100 {padding-top: 40px;}
+	.pb-45 {padding-bottom: 40px;}
+	.heading-title {font-size: 25px;}
+	.section-heading {display: block;}
+	.heading-title-2 {font-size: 30px; padding-bottom: 10px;}
+	.sub-heading-2 {font-size: 18px;}
+
+	/*----- Home Page -----*/
+	.logo{max-width: 120px;}
+	.home-banner {padding: 120px 0px 50px 0px;}
+	.banner-contain {text-align: center; margin-bottom: 30px;}
+	.banner-heading {font-size: 30px;}
+	.work-process-title {font-size: 20px;}
+	.work-process-title {margin-top: 30px;}
+	.feature-part {padding-bottom: 10px;}
+	.feature-box {max-width: 100%; text-align: center;}
+	.team-part {padding-bottom: 0px;}
+	.team-box {display: inline-block; width: 100%; text-align: center;}
+	.team-img {margin: 0 auto; float: unset; margin-bottom: 10px;}
+	.team-des {width: 100%; padding-left: 0;}
+	.faq-part .nav-tab li{margin-bottom: 20px;}
+	.work-box img{max-width: 90%;}
+
+	/*----- Home Page Tow -----*/
+	.home-banner-2 {padding-top: 30px; min-height: 710px;}
+	.banner-tow-content {text-align: center; margin-bottom: 30px;}
+	.coin-counter{float: unset;}
+	.banner-heading-tow {font-size: 30px;}
+	.coins-counter-loop li {padding: 0px 9px;}
+	.coins-counter-loop li span {width: 45px; height: 45px; line-height: 45px; font-size: 20px;}
+	.coins-counter-loop li .coin-day {font-size: 11px;}
+	.coin-start {font-size: 18px; padding-bottom: 10px;}
+	.coin-head {margin-bottom: 15px;}
+	.coins-progress {height: 10px;}
+	.about-img {margin-bottom: 15px;}
+	.feature-box-2 .frontend, .feature-box-2 .backend {padding: 15px;}
+	.feature-part-2 {padding-bottom: 10px;}
+	.roadmap-part .main-roadmap {margin-top: 40px;}
+	.token-sale-2 .token-graphic-detail {padding-left: 0;}
+	.graph-logo img{max-width: 120px;}
+	.faq-part-2 .Frequently-tabs li {padding: 0px 5px; margin-bottom: 10px;}
+	.faq-part-2 .Frequently-tabs li a {padding: 5px 10px;}
+	.Frequently-tabs{padding-bottom: 20px;}
+	.faq-part-2 .faq-tab {padding: 15px 15px;}
+	.accordion-faq-title {padding: 12px 42px 12px 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px;}
+	.accordion-faq-title:before {right: 27px;}
+	.accordion-faq-title:after {right: 20px;}
+	.accordion-faq-content{padding: 12px 20px;padding-top: 0px;}
+
+	/*----- About Page -----*/
+	.sub-page-banner {padding-top: 100px; padding-bottom: 60px;}
+	.sub-banner-title {font-size: 30px;}
+	.sub-page-banner ul li {font-size: 14px; padding: 0px 15px;}
+	.play-icon span {width: 70px; height: 70px; line-height: 50px; border: 10px solid; font-size: 25px; padding-left: 4px;}
+	.about-main .work-process-title {margin-top: 0;}
+
+	/*----- Blog List Page -----*/
+	.blog-list-title {font-size: 20px;}
+
+	/*----- Blog Detail Page -----*/
+	.blog-detail-content h2 {font-size: 22px;}
+	.blog-detail-content blockquote {padding: 20px 20px;}
+	.blog-detail-tag ul { display: block; padding-left: 0; margin-top: 5px;}
+	.blog-detail-tag ul li a {padding: 8px 18px;}
+	.blog-detail-social {text-align: left !important; margin-top: 20px;}
+	.blog-comment-box li {display: inline-block;}
+	.comment-user {width: 50px;}
+	.blog-comment-content {width: calc(100% - 50px);}
+	.blog-detail-tag-social {padding-bottom: 20px; margin-bottom: 20px;}
+	.blog-comment-post-singel {padding-bottom: 0px; margin-bottom: 20px;}
+	.blog-comment-post-singel .blog-comment-box li{margin-bottom: 20px;}
+	.blog-comment-heading {font-size: 20px;}
+	.commenter {font-size: 16px;}
+	.comment-reply {position: unset; margin-top: 10px;}
+
+	/*----- Roadmap Page -----*/
+	.roadmap-main-graph{display: none;}
+	.roadmap-main .main-roadmap{display: block;}
+
+	/*----- Contact Page -----*/
+	.contact-form .blog-comment-heading{padding-top: 30px;}
+
+	/*----- Token Sale Page -----*/
+	.distribution-title{padding-bottom: 20px;}
+	.token-distribut {padding-bottom: 40px;}
+	.col-md-6:last-child .token-distribut{padding-bottom: 0;}
+	.token-sale-counter{padding: 15px;}
+
+	/*----- Footer -----*/
+	.footer-icon {margin-bottom: 30px;}
+	.footer-link {margin-bottom: 20px;}
+	.subscribe {padding-top: 0;}
+	.footer-link ul li {width: 50%;}
+
+}
+
+@media(max-width: 480px){
+	/*----- Token Sale Page -----*/
+	.token-sale-counter .coins-counter-loop li {padding: 0px 6px;}
+	.token-sale-counter .coins-counter-loop li span {font-size: 20px; line-height: 20px;}
+	.token-sale-counter .coins-counter-loop li .coin-day {font-size: 14px; padding-top: 3px;}
+	.information-token li{margin: 15px 0px; text-align: center;}
+	.information-token li label{width: 100%;}
+	.information-token li span {float: unset; width: 100%;}
+
+}
+
+@media(max-width: 374px){
+	/*----- Home Page -----*/
+	.listtopie-svg {width: 280px; height: 280px;}
+	.token-graph-right{height: 300px;}
+	.listtopie-initialized {display: flex; justify-content: center;}
+}

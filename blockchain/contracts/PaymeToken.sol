@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
 
 //Note: Token is Mintable due to the ERC20Capped Inheritence
-contract PaymeToken is ERC20Capped, Ownable, ERC20Pausable {
+contract payMEToken is ERC20Capped, Ownable, ERC20Pausable {
 
   using SafeMath for uint256;
 

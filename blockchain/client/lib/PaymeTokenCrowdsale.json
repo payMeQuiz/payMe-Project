@@ -945,7 +945,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"contracts/ico/PaymeTokenCrowdsale.sol": "PaymeTokenCrowdsale"
+			"contracts/ico/payMETokenCrowdsale.sol": "payMETokenCrowdsale"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -1199,7 +1199,7 @@
 				"dweb:/ipfs/QmbhU3ALMT5ouvJPteZrf6vobf3J3bSb1kzLEMQhYXP1ZS"
 			]
 		},
-		"contracts/ico/PaymeTokenCrowdsale.sol": {
+		"contracts/ico/payMETokenCrowdsale.sol": {
 			"keccak256": "0x4eacc5c8a2a17d9c78ada866c77c2ee2d09891c2819e1a4dd9846a5bbaf9a6b6",
 			"license": "Apache-2.0",
 			"urls": [
@@ -1207,7 +1207,7 @@
 				"dweb:/ipfs/QmZzCtZBSey6daSKn7uZyVQG2BRPFvsHGA8ZEchZtPLnPu"
 			]
 		},
-		"contracts/ico/PaymeTokenVesting.sol": {
+		"contracts/ico/payMETokenVesting.sol": {
 			"keccak256": "0x57b444b817e541350b126d13c587196f5006cfef8035c71beccd2d4a32b4b639",
 			"license": "Apache-2.0",
 			"urls": [

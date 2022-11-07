@@ -11,7 +11,7 @@ import "../crowdsale/validation/CappedCrowdsale.sol";
 import "../crowdsale/validation/PausableCrowdsale.sol";
 import "../crowdsale/distribution/FinalizableCrowdsale.sol";
 
-import "../ico/PaymeTokenVesting.sol";
+import "../ico/payMETokenVesting.sol";
 
 error InsufficientBalance(uint256 balance, uint256 expected);
 error IndividuallyMinimumCappedCrowdsale(uint256);
@@ -20,7 +20,7 @@ error NotAllowed(address);
 error TotalExceedTotalSupply(uint256);
 
 
-contract PaymeTokenCrowdsale is Ownable, 
+contract payMETokenCrowdsale is Ownable, 
 CappedCrowdsale, TimedCrowdsale, WhitelistCrowdsale, 
 FinalizableCrowdsale, PausableCrowdsale  {
    
@@ -52,9 +52,9 @@ FinalizableCrowdsale, PausableCrowdsale  {
    uint256 public constant businessDevelopmentPercentage = 20;
 
    //Vesting contract 
-    // PaymeTokenVesting public projectTeamVesting;
-    // PaymeTokenVesting public techincalDevelopersVesting;
-    // PaymeTokenVesting public businessDevelopmentVesting; 
+    // payMETokenVesting public projectTeamVesting;
+    // payMETokenVesting public techincalDevelopersVesting;
+    // payMETokenVesting public businessDevelopmentVesting; 
 
    Investor[] private investors;
 
@@ -201,9 +201,9 @@ FinalizableCrowdsale, PausableCrowdsale  {
      */
     function _finalization() override internal {
         //TODO: Creating Vesting Shedule for others: technical team, director, e.t.c
-        IERC20  paymeToken = token();
+        IERC20  payMEToken = token();
 
-        uint256 totalSupply = paymeToken.totalSupply();
+        uint256 totalSupply = payMEToken.totalSupply();
 
 
         uint256 totalWei =  weiRaised();
@@ -224,7 +224,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
           revert TotalExceedTotalSupply(total);
         }
         
-        paymeToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
+        payMEToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
          
         //Create Vesting shedule for all investor
         createInvestors();
@@ -235,7 +235,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
     function createInvestors() public {
        require(hasClosed(), "FinalizableCrowdsale: not closed");
 
-       PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
+       payMETokenVesting vesting = payMETokenVesting(vestingAddress);
 
       for(uint i = 0; i < investors.length; i++){
             Investor memory _investor = investors[i];

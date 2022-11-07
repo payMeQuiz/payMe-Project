@@ -67,9 +67,9 @@ describe('Crowdsales ', function(){
       // console.log(closingTime);
      // afterClosingTime = closingTime.add(time.duration.seconds(1));
 
-      Token = await ethers.getContractFactory("PaymeToken");
+      Token = await ethers.getContractFactory("payMEToken");
       tokenVesting = await ethers.getContractFactory("MockTokenVesting");
-      tokenCrowdsale = await ethers.getContractFactory("PaymeTokenCrowdsale");
+      tokenCrowdsale = await ethers.getContractFactory("payMETokenCrowdsale");
       BUSDToken = await ethers.getContractFactory("BUSDToken");
 
       testToken = await Token.deploy();

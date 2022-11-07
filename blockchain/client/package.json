@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "animations": "^0.0.0",
+    "bootstrap": "^5.2.2",
     "ethers": "^5.7.2",
     "next": "12.3.1",
     "react": "18.2.0",
