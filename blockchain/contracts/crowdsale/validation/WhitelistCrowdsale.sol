@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * @dev Crowdsale in which only whitelisted users can contribute.
  */
 abstract contract WhitelistCrowdsale is AccessControl, Crowdsale {
-    bytes32 INVESTOR_WHITELISTED =  0xf5ddd805fa96b7c3d4f3ea55114f966ab9aad1de73aff48d008717b66678bb36;
+    bytes32 constant INVESTOR_WHITELISTED =  0xf5ddd805fa96b7c3d4f3ea55114f966ab9aad1de73aff48d008717b66678bb36;
     /**
      * @dev Extend parent behavior requiring beneficiary to be whitelisted. Note that no
      * restriction is imposed on the account sending the transaction.
