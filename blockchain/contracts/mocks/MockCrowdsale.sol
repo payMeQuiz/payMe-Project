@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
-import "../ico/payMETokenCrowdsale.sol";
+import "../ico/PaymeTokenCrowdsale.sol";
 
 /**
- * @title MockToken1Vesting
+ * @title MockTokenVesting
  * WARNING: use only for testing and debugging purpose
- */
-contract MockCrowdsale is payMETokenCrowdsale{
+*/
+
+contract MockCrowdsale is PaymeTokenCrowdsale{
 
     uint256 mockTime = 0;
 
@@ -24,8 +25,9 @@ contract MockCrowdsale is payMETokenCrowdsale{
         uint256 _TGETime,
         uint256 _cliff,
         uint256 _duration
-    ) 
-      payMETokenCrowdsale(
+    )
+
+    PaymeTokenCrowdsale(
         _BUSDT,
         _vestingAddress,
         rate,    // rate in PayME

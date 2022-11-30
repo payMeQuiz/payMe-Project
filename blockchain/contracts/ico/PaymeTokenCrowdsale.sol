@@ -11,16 +11,17 @@ import "../crowdsale/validation/CappedCrowdsale.sol";
 import "../crowdsale/validation/PausableCrowdsale.sol";
 import "../crowdsale/distribution/FinalizableCrowdsale.sol";
 
-import "../ico/payMETokenVesting.sol";
+import "../ico/PaymeTokenVesting.sol";
 
 error InsufficientBalance(uint256 balance, uint256 expected);
 error IndividuallyMinimumCappedCrowdsale(uint256);
 error IndividuallyMaximumCappedCrowdsale(uint256);
 error NotAllowed(address);
 error TotalExceedTotalSupply(uint256);
+error InsufficientTokenForSales(uint256);
 
 
-contract payMETokenCrowdsale is Ownable, 
+contract PaymeTokenCrowdsale is Ownable, 
 CappedCrowdsale, TimedCrowdsale, WhitelistCrowdsale, 
 FinalizableCrowdsale, PausableCrowdsale  {
    
@@ -42,19 +43,21 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
    uint256 public maximumSale;
 
+   uint256 public totalTeamShare;
+
     // The Project Team comprises 10% of the Max supply.
     // Technical Developers comprise 5% of the Max supply.
     // Business Development comprises 20% of the Max supply, 
 
    //Percentage
-   uint256 public constant projectTeamPercentage = 10;
-   uint256 public constant techincalDevelopersPercentage = 5;
-   uint256 public constant businessDevelopmentPercentage = 20;
+   uint256 public constant PROJECT_TEAM_PERCENTAGE = 10;
+   uint256 public constant TECHINCAL_DEVELOPERS_PERCENTAGE = 5;
+   uint256 public constant BUSINESS_DEVELOPERS_PERCENTAGE = 20;
 
    //Vesting contract 
-    // payMETokenVesting public projectTeamVesting;
-    // payMETokenVesting public techincalDevelopersVesting;
-    // payMETokenVesting public businessDevelopmentVesting; 
+    // PaymeTokenVesting public projectTeamVesting;
+    // PaymeTokenVesting public techincalDevelopersVesting;
+    // PaymeTokenVesting public businessDevelopmentVesting; 
 
    Investor[] private investors;
 
@@ -104,6 +107,17 @@ FinalizableCrowdsale, PausableCrowdsale  {
         minimumSale = 100;
         maximumSale = 1000;
 
+        IERC20  PaymeToken = token();
+
+        uint256 totalSupply = PaymeToken.totalSupply();
+
+        uint256 ptShare = totalSupply.mul(PROJECT_TEAM_PERCENTAGE).div(100);
+        uint256 tdShare = totalSupply.mul(TECHINCAL_DEVELOPERS_PERCENTAGE).div(100);
+        uint256 bdShare = totalSupply.mul(BUSINESS_DEVELOPERS_PERCENTAGE).div(100);
+        totalTeamShare = ptShare.add(tdShare).add(bdShare);
+
+        
+
     }
 
     function buyTokensInBUSD(address beneficiary, uint256 amount) public nonReentrant payable {
@@ -114,14 +128,22 @@ FinalizableCrowdsale, PausableCrowdsale  {
         _preValidatePurchase(beneficiary, weiAmount);
 
         // calculate token amount to be created
-        uint256 tokens = _getTokenAmount(weiAmount);
+        uint256 tokenAmount = _getTokenAmount(weiAmount);
 
         // update state
         //_weiRaised = _weiRaised.add(weiAmount);
 
-        _processPurchase(beneficiary, tokens);
+        //check if contract has a enough token
+        IERC20 paymeToken = token();
+        uint256 totalWei =  weiRaised();
+        uint256 totalTokenShareSell = totalTeamShare.add(totalWei);
+        if(paymeToken.balanceOf(address(this)) < totalTokenShareSell.add(tokenAmount)){
+           revert InsufficientTokenForSales(tokenAmount);
+        }
+
+        _processPurchase(beneficiary, tokenAmount);
         
-        emit TokensPurchased(_msgSender(), beneficiary, weiAmount, tokens);
+        emit TokensPurchased(_msgSender(), beneficiary, weiAmount, tokenAmount);
 
         _updatePurchasingState(beneficiary, weiAmount);
 
@@ -140,8 +162,6 @@ FinalizableCrowdsale, PausableCrowdsale  {
 
        
     }
-
-    
 
     function _preValidatePurchase(address beneficiary, uint256 weiAmount) 
     internal 
@@ -201,30 +221,26 @@ FinalizableCrowdsale, PausableCrowdsale  {
      */
     function _finalization() override internal {
         //TODO: Creating Vesting Shedule for others: technical team, director, e.t.c
-        IERC20  payMEToken = token();
+        IERC20  PaymeToken = token();
 
-        uint256 totalSupply = payMEToken.totalSupply();
 
 
         uint256 totalWei =  weiRaised();
         uint256 tokenRate = rate();
 
-        
-        uint256 ptShare = totalSupply.mul(projectTeamPercentage).div(100);
-        uint256 tdShare = totalSupply.mul(techincalDevelopersPercentage).div(100);
-        uint256 bdShare = totalSupply.mul(businessDevelopmentPercentage).div(100);
-        uint256 totalShare = ptShare.add(tdShare).add(bdShare);
+        uint256 totalSupply = PaymeToken.totalSupply();
+
         uint256 totalSales = totalWei.mul(tokenRate);
         
         //Send raised Payme Token to vesting contract
 
         //check if totalShare + totalSales <= totalSupply 
-        uint total = totalShare.add(totalSales);
+        uint total = totalTeamShare.add(totalSales);
         if(total >  totalSupply){
           revert TotalExceedTotalSupply(total);
         }
         
-        payMEToken.safeTransfer(vestingAddress, totalShare.add(totalSales));
+        PaymeToken.safeTransfer(vestingAddress, total);
          
         //Create Vesting shedule for all investor
         createInvestors();
@@ -235,7 +251,7 @@ FinalizableCrowdsale, PausableCrowdsale  {
     function createInvestors() public {
        require(hasClosed(), "FinalizableCrowdsale: not closed");
 
-       payMETokenVesting vesting = payMETokenVesting(vestingAddress);
+       PaymeTokenVesting vesting = PaymeTokenVesting(vestingAddress);
 
       for(uint i = 0; i < investors.length; i++){
             Investor memory _investor = investors[i];

@@ -1,4 +1,4 @@
-// ico/contracts/payMETokenVesting.sol
+// ico/contracts/PaymeTokenVesting.sol
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity 0.8.9;
 
@@ -12,9 +12,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**********************************************
- * @title payMETokenVesting
+ * @title PaymeTokenVesting
  *********************************/
-contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
+contract PaymeTokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     using SafeMathUpgradeable for uint256;
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -35,8 +35,10 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         bool  revocable;
         // total amount of tokens to be released at the end of the vesting
         uint256 amountTotal;
+
         // amount of tokens released
         uint256  released;
+   
         // whether or not the vesting has been revoked
         bool revoked;
 
@@ -52,7 +54,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     mapping(bytes32 => VestingSchedule) private vestingSchedules;
     uint256 private vestingSchedulesTotalAmount;
     mapping(address => uint256) private holdersVestingCount;
-    mapping(bytes32 => uint256) public TGETokenParticipates;
+    mapping(bytes32 => uint256) public tgeTokenParticipants;
 
     address public crowdsalesAddress;
 
@@ -83,7 +85,6 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
             msg.sender == crowdsalesAddress ||
             msg.sender == owner(),"No Access");
          _;
-
         
     }
 
@@ -107,8 +108,8 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
 
     function initialize(IERC20Upgradeable iToken,uint256 iTGEPercent,uint256 iTGEOpeningTime) public initializer {
         require(address(iToken) != address(0));
-        require(iTGEPercent > 0, "TGE Amount must be greater than 0");
-        require(iTGEOpeningTime > 0, "TGE Openning time must be greater than 0");
+        require(iTGEPercent > 0 && iTGEPercent < 100, "TGE Percent must be greater than 0 and Less than 100");
+        //require(iTGEOpeningTime >= block.timestamp, "TGE Openning time must be greater than the current time");
 
         __Ownable_init_unchained();
         __ReentrancyGuard_init_unchained();
@@ -217,6 +218,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         require(iSlicePeriodSeconds >= 1, "TokenVesting: slicePeriodSeconds must be >= 1");
         bytes32 vestingScheduleId = this.computeNextVestingScheduleIdForHolder(iBeneficiary);
         uint256 cliff = iStart.add(iCliff);
+
         vestingSchedules[vestingScheduleId] = VestingSchedule(
             true,
             iBeneficiary,
@@ -235,7 +237,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         vestingSchedulesIds.push(vestingScheduleId);
         uint256 currentVestingCount = holdersVestingCount[iBeneficiary];
         holdersVestingCount[iBeneficiary] = currentVestingCount.add(1);
-        TGETokenParticipates[vestingScheduleId] = 0;
+        tgeTokenParticipants[vestingScheduleId] = 0;
         emit VestingScheduleCreated(vestingScheduleId);
     }
 
@@ -249,7 +251,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         onlyIfVestingScheduleNotRevoked(vestingScheduleId){
         VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
         require(vestingSchedule.revocable, "TokenVesting: vesting is not revocable");
-        uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
+        uint256 vestedAmount = _computeReleasableAmount(vestingScheduleId,vestingSchedule);
         if(vestedAmount > 0){
             release(vestingScheduleId, vestedAmount);
         }
@@ -284,23 +286,20 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         );
 
         require(
-            vestingSchedule.releaseAtTGE == true,
+            vestingSchedule.releaseAtTGE,
             "ReleaseTokenAtTGE: only investors can claim token at TGE"
         );
 
-
-
         uint256 currentTime = getCurrentTime();
 
-
         require(currentTime >= tgeOpeningTime, "TGE: time not reached!");
-        require(TGETokenParticipates[vestingScheduleId] == 0, "TGE: Token Already claimed");
+        require(tgeTokenParticipants[vestingScheduleId] == 0, "TGE: Token Already claimed");
         
         uint256 TGEReleaseAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
         
         vestingSchedule.released = vestingSchedule.released.add(TGEReleaseAmount);
 
-        TGETokenParticipates[vestingScheduleId] = TGEReleaseAmount;
+        tgeTokenParticipants[vestingScheduleId] = TGEReleaseAmount;
 
         address payable beneficiaryPayable = payable(vestingSchedule.beneficiary);
         
@@ -334,7 +333,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         );
 
 
-        uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
+        uint256 vestedAmount = _computeReleasableAmount(vestingScheduleId, vestingSchedule);
         require(vestedAmount >= amount, "TokenVesting: cannot release tokens, not enough vested tokens");
         vestingSchedule.released = vestingSchedule.released.add(amount);
         address payable beneficiaryPayable = payable(vestingSchedule.beneficiary);
@@ -363,7 +362,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         view
         returns(uint256){
         VestingSchedule storage vestingSchedule = vestingSchedules[vestingScheduleId];
-        return _computeReleasableAmount(vestingSchedule);
+        return _computeReleasableAmount(vestingScheduleId, vestingSchedule);
     }
 
     /**
@@ -422,7 +421,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     * @dev Computes the releasable amount of tokens for a vesting schedule.
     * @return the amount of releasable tokens
     */
-    function _computeReleasableAmount(VestingSchedule memory vestingSchedule)
+    function _computeReleasableAmount(bytes32 vestingScheduleId, VestingSchedule memory vestingSchedule)
     internal
     view
     returns(uint256){
@@ -435,26 +434,39 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
         //    return 20;
         // }
 
-        //return 30;
+        // return 30;
+        // if(currentTime >= tgeOpeningTime){
+        //     uint256 tgeAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
+        //     vestedAmount = vestedAmount.add(tgeAmount);
+        // }
 
-        if ((currentTime < vestingSchedule.cliff) || vestingSchedule.revoked) {
-            return 0;
-        } else if (currentTime >= vestingSchedule.start.add(vestingSchedule.duration)) { 
-            //time has elapsed -> release all 
+        //uint amountVesting = vestingSchedule.amountTotal.sub(VestingSchedule.amountTGE);
         
-            return vestingSchedule.amountTotal.sub(vestingSchedule.released);
-        } else {
-            //compute daily vesting amount
-            //vested amount = amount * ( current time - start time )/ duration
-            uint256 timeFromStart = currentTime.sub(vestingSchedule.start);
-            uint256 vestedAmount = vestingSchedule.amountTotal.mul(timeFromStart).div(vestingSchedule.duration);
-            if(currentTime >= tgeOpeningTime){
-               uint256 tgeAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
-               vestedAmount.add(tgeAmount);
+            uint256 tgeReleasableAmount = 0;
+            uint256 tgeAmount = vestingSchedule.amountTotal.mul(tgePercent).div(100);
+            uint256 vestingAmount = vestingSchedule.amountTotal;
+
+            if(currentTime > tgeOpeningTime && tgeTokenParticipants[vestingScheduleId] == 0 && vestingSchedule.releaseAtTGE && !vestingSchedule.revoked){
+               //give out
+               tgeReleasableAmount = tgeAmount;
+               vestingAmount=vestingSchedule.amountTotal.sub(tgeAmount);
             }
-            vestedAmount = vestedAmount.sub(vestingSchedule.released);
-            return vestedAmount;
-        }
+
+            if ((currentTime < vestingSchedule.cliff) || vestingSchedule.revoked) {
+                return tgeReleasableAmount;
+            } else if (currentTime >= vestingSchedule.start.add(vestingSchedule.duration)) { 
+               //time has elapsed -> release all 
+               return vestingAmount.add(tgeReleasableAmount).sub(vestingSchedule.released);
+            } else {
+                //compute daily vesting amount
+                //vested amount = amount * ( current time - start time )/ duration
+                uint256 timeFromStart = currentTime.sub(vestingSchedule.start);
+                uint256 vestedAmount = vestingAmount.mul(timeFromStart).div(vestingSchedule.duration);
+                vestedAmount = vestedAmount.add(tgeReleasableAmount).sub(vestingSchedule.released);
+                return vestedAmount;
+            }
+      
+
 
 
 
@@ -462,7 +474,7 @@ contract payMETokenVesting is OwnableUpgradeable, ReentrancyGuardUpgradeable{
     }
 
     function getCurrentTime()
-        internal
+        public
         virtual
         view
         returns(uint256){

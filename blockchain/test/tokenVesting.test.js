@@ -5,7 +5,7 @@ const {
   TGETIME
 } = require("../helper-config");
 
-describe("payMETokenVesting", function () {
+describe("PaymeTokenVesting", function () {
   let Token;
   let testToken;
   let TokenVesting;
@@ -16,11 +16,12 @@ describe("payMETokenVesting", function () {
   let baseTime = 1662011895;
   let duration = 10000;
   let amount = 100
+  let tgeOpeningTime = Math.round(5+ Date.now()/1000);
 
   const deployVestingToken = async function(TokenVesting){
     tokenVesting = await upgrades.deployProxy(
       TokenVesting,
-      [testToken.address, TGEPERCENTAGE,TGETIME],
+      [testToken.address, TGEPERCENTAGE,tgeOpeningTime],
       {initializer: "initialize"});
 
      const e = await tokenVesting.deployed();
@@ -52,7 +53,7 @@ describe("payMETokenVesting", function () {
 
   before(async function () {
 
-    Token = await ethers.getContractFactory("payMEToken");
+    Token = await ethers.getContractFactory("PaymeToken");
     TokenVesting = await ethers.getContractFactory("MockTokenVesting");
 
   });
@@ -103,9 +104,10 @@ describe("payMETokenVesting", function () {
 
     it("Should vest tokens gradually", async function () {
       // deploy vesting contruhjhact
+      let TGEOT1 = Math.round(5+ Date.now()/1000)+30;
       const tokenVesting = await upgrades.deployProxy(
         TokenVesting,
-        [testToken.address, TGEPERCENTAGE,TGETIME],
+        [testToken.address, TGEPERCENTAGE,TGEOT1],
         {initializer: "initialize"});
   
        const e = await tokenVesting.deployed();
@@ -126,10 +128,10 @@ describe("payMETokenVesting", function () {
 
 
 
-       //Create Vesting Schedul 
+       //Create Vesting Schedule
        await expect(tokenVesting.connect(owner).createVestingSchedule(
         beneficiary1.address,
-        baseTime,
+        TGEOT1 + 100,
         0,
         duration,
         1,
@@ -156,8 +158,27 @@ describe("payMETokenVesting", function () {
         await tokenVesting.computeReleasableAmount(vestingScheduleId)
       ).to.be.equal(0);
 
+      //set time to vesting time
+      console.log("TGE Opening time");
+      console.log(TGEOT1);
+      await tokenVesting.setCurrentTime(TGEOT1+5);
+
+
+      console.log("Current time");
+      var blockchainTime = await tokenVesting.getCurrentTime();
+      console.log(blockchainTime.toString());
+      
+
+      //check that 20% is released
+      // check that vested amount is half the total amount to vest
+      expect(
+        await tokenVesting
+          .connect(beneficiary1)
+          .computeReleasableAmount(vestingScheduleId)
+      ).to.be.equal(20);
+
       // set time to half the vesting period
-      const halfTime = baseTime + duration / 2;
+      const halfTime = TGEOT1 + 100 + duration / 2;
       await tokenVesting.setCurrentTime(halfTime);
 
       // check that vested amount is half the total amount to vest
@@ -165,7 +186,7 @@ describe("payMETokenVesting", function () {
         await tokenVesting
           .connect(beneficiary1)
           .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(50);
+      ).to.be.equal(60); //60 -> 40 vesting + 20 TGE
 
       // check that only beneficiary can try to release vested tokens
       await expect(
@@ -188,12 +209,12 @@ describe("payMETokenVesting", function () {
         .to.emit(testToken, "Transfer")
         .withArgs(tokenVesting.address, beneficiary1.address, 10);
 
-              // check that the vested amount is now 40
+      // check that the vested amount is now 40
       expect(
         await tokenVesting
           .connect(beneficiary1)
           .computeReleasableAmount(vestingScheduleId)
-      ).to.be.equal(40);
+      ).to.be.equal(50);
 
       let vestingSchedule = await tokenVesting.getVestingSchedule(
         vestingScheduleId
@@ -203,7 +224,7 @@ describe("payMETokenVesting", function () {
       expect(vestingSchedule.released).to.be.equal(10);
 
       // set current time after the end of the vesting period
-      await tokenVesting.setCurrentTime(baseTime + duration + 1);
+      await tokenVesting.setCurrentTime(TGEOT1 + 100 + duration + 1);
 
       // check that the vested amount is 90
       expect(
@@ -378,55 +399,55 @@ describe("payMETokenVesting", function () {
       ).to.be.revertedWith("TokenVesting: amount must be > 0");
     });
 
-    it("Should release "+TGEPERCENTAGE+"% at TGE", async function(){
+    // it("Should release "+TGEPERCENTAGE+"% at TGE", async function(){
 
-      const tokenVesting = await deployVestingToken(TokenVesting)
-
-
-      await testToken.transfer(tokenVesting.address, ownerBalance)
-
-      //Create Vesting Schedule
-      await createVestingSchedule(tokenVesting);
+    //   const tokenVesting = await deployVestingToken(TokenVesting)
 
 
+    //   await testToken.transfer(tokenVesting.address, ownerBalance)
 
-      const vestingScheduleId =
-      await tokenVesting.computeVestingScheduleIdForAddressAndIndex(
-        beneficiary1.address,
-        0
-      );
+    //   //Create Vesting Schedule
+    //   await createVestingSchedule(tokenVesting);
+
+
+
+    //   const vestingScheduleId =
+    //   await tokenVesting.computeVestingScheduleIdForAddressAndIndex(
+    //     beneficiary1.address,
+    //     0
+    //   );
      
-      //console.log(ree);
-      let percentage = (amount*TGEPERCENTAGE)/100;
+    //   //console.log(ree);
+    //   let percentage = (amount*TGEPERCENTAGE)/100;
 
-      //Check that only user can claim token
-      await expect( tokenVesting.connect(beneficiary2).releaseTokenForTGE(vestingScheduleId))
-      .to.be
-      .revertedWith("TokenVesting: only beneficiary and owner can release vested tokens");
+    //   //Check that only user can claim token
+    //   await expect( tokenVesting.connect(beneficiary2).releaseTokenForTGE(vestingScheduleId))
+    //   .to.be
+    //   .revertedWith("TokenVesting: only beneficiary and owner can release vested tokens");
 
-      //Check that token can only be claimed on or after TGE time
-      await tokenVesting.setCurrentTime(baseTime-TGETIME);
-      await expect( tokenVesting.releaseTokenForTGE(vestingScheduleId))
-      .to.be
-      .revertedWith("TGE: time not reached!");
+    //   //Check that token can only be claimed on or after TGE time
+    //   await tokenVesting.setCurrentTime(baseTime-TGETIME);
+    //   await expect( tokenVesting.releaseTokenForTGE(vestingScheduleId))
+    //   .to.be
+    //   .revertedWith("TGE: time not reached!");
 
 
-      await tokenVesting.setCurrentTime(baseTime);
+    //   await tokenVesting.setCurrentTime(baseTime);
 
-      await expect( tokenVesting.releaseTokenForTGE(vestingScheduleId))
-        .to.emit(tokenVesting, "TokenReleasedAtTGE")
-        .withArgs(beneficiary1.address,percentage);
+    //   await expect( tokenVesting.releaseTokenForTGE(vestingScheduleId))
+    //     .to.emit(tokenVesting, "TokenReleasedAtTGE")
+    //     .withArgs(beneficiary1.address,percentage);
 
-      //Check that user now have the balance
-      expect(await testToken.balanceOf(beneficiary1.address))
-      .to.equal(percentage);
+    //   //Check that user now have the balance
+    //   expect(await testToken.balanceOf(beneficiary1.address))
+    //   .to.equal(percentage);
 
-      //Check that beneficiary cannot claim TGE token Again
-      await expect(tokenVesting.releaseTokenForTGE(vestingScheduleId))
-      .to.be
-      .revertedWith("TGE: Token Already claimed");
+    //   //Check that beneficiary cannot claim TGE token Again
+    //   await expect(tokenVesting.releaseTokenForTGE(vestingScheduleId))
+    //   .to.be
+    //   .revertedWith("TGE: Token Already claimed");
       
-    });
+    // });
 
     // it("Claiming tokens", async function(){
 
